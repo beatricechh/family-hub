@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Family Hub</title>
+<title>Cuibul 🪹</title>
 <style>
   :root {
     --bg: #f4f1ec; --surface: #ffffff; --surface-2: #faf8f4; --border: #e7e1d7;
@@ -302,9 +302,9 @@
 </style>
 </head>
 <body>
-<div id="loadingScreen" class="fh-screen" hidden><div class="fh-card"><div class="fh-logo">🏡</div><div class="fh-title">Family Hub</div><div class="fh-sub">Loading…</div></div></div>
+<div id="loadingScreen" class="fh-screen" hidden><div class="fh-card"><div class="fh-logo">🏡</div><div class="fh-title">Cuibul 🪹</div><div class="fh-sub">Loading…</div></div></div>
 <div id="authScreen" class="fh-screen" hidden><div class="fh-card">
-  <div class="fh-logo">🏡</div><div class="fh-title">Family Hub</div>
+  <div class="fh-logo">🏡</div><div class="fh-title">Cuibul 🪹</div>
   <div class="fh-sub">Sign in to your family dashboard. We'll email you a magic link — no password to remember.</div>
   <input type="email" id="authEmail" placeholder="you@email.com" autocomplete="email" inputmode="email">
   <button class="btn block" id="authSend" style="margin-top:10px;">Email me a sign-in link</button>
@@ -326,7 +326,7 @@
   <header class="top">
     <button class="icon-btn" id="backBtn" hidden><span class="chev">‹</span> Back</button>
     <div class="head-titles">
-      <h1 id="familyName">Family Hub</h1>
+      <h1 id="familyName">Cuibul</h1>
       <div class="date" id="todayDate"></div>
     </div>
   </header>
@@ -545,6 +545,7 @@ const EV_TYPES={
 const REMIND_OPTS=[["none","No alert"],["start","At start time"],["10m","10 minutes before"],["30m","30 minutes before"],["1h","1 hour before"],["1d","1 day before"]];
 const REMIND_MIN={none:null,start:0,"10m":10,"30m":30,"1h":60,"1d":1440};
 const MEMBER_COLORS=["#d9772e","#4a7fb5","#4f9d69","#8367b0","#c65f86","#c7972f"];
+const BIRDS=["🐦","🦉","🐤","🐥","🐧","🦆","🕊️","🦜"];
 const SHOP_COLORS=["#c0392b","#1f4e9c","#d4a017","#2e8b57","#7d3c98","#0e7c7b"];
 const SHOP_EMOJIS=["🏮","🧴","🛒","🥬","🏬","🛍️","🧺","💊"];
 const GREETINGS=["Hello","Hi there","Hey","Howdy","Greetings","Buenos días","Bună dimineața","Ciao","Hallo","Bonjour","Guten Morgen","Olá","Salut","G'day","Namaste","Welcome back"];
@@ -565,6 +566,7 @@ function fmtDay(iso){ const d=new Date(iso+"T00:00:00"),t=new Date(todayISO()+"T
 function fmtDayLong(iso){ return new Date(iso+"T00:00:00").toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"}); }
 function fmtTime(t){ if(!t)return ""; const[h,m]=t.split(":"); const d=new Date(); d.setHours(+h,+m); return d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}); }
 function initials(n){ return n.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase(); }
+function avGlyph(m){ if(!m)return ""; if(m.bird)return m.bird; const src=(m.id||m.name||"S"); let h=0; for(const c of src) h=(h+c.charCodeAt(0))%BIRDS.length; return BIRDS[h]; }
 function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 function emptyMsg(e,t){ return `<div class="empty"><span class="e-emoji">${e}</span>${t}</div>`; }
 
@@ -573,8 +575,8 @@ function seed(){
   const mA=uid(),mB=uid(),mC=uid();
   const sAsian=uid(),sDM=uid(),sNetto=uid();
   return {
-    name:"Family Hub", you:"Beatrice", theme:"auto",
-    members:[{id:mA,name:"Mum",color:MEMBER_COLORS[0]},{id:mB,name:"Dad",color:MEMBER_COLORS[1]},{id:mC,name:"Mia",color:MEMBER_COLORS[3]}],
+    name:"Cuibul", you:"Beatrice", theme:"auto",
+    members:[{id:mA,name:"Mum",color:MEMBER_COLORS[0],bird:"🐦"},{id:mB,name:"Dad",color:MEMBER_COLORS[1],bird:"🦉"},{id:mC,name:"Mia",color:MEMBER_COLORS[3],bird:"🐤"}],
     categories:DEFAULT_CATS.map(c=>({...c})),
     shops:[{id:sAsian,label:"Asian store",color:"#c0392b",emoji:"🏮"},{id:sDM,label:"DM",color:"#1f4e9c",emoji:"🧴"},{id:sNetto,label:"Netto",color:"#d4a017",emoji:"🛒"}],
     shopping:[
@@ -618,7 +620,7 @@ function seed(){
 let state;
 function migrate(s){
   s.meals=s.meals||{}; s.notes=s.notes||[]; s.members=s.members||[]; s.shopping=s.shopping||[];
-  s.reminders=s.reminders||[]; s.events=s.events||[]; s.theme=s.theme||"auto"; s.name=s.name||"Family Hub";
+  s.reminders=s.reminders||[]; s.events=s.events||[]; s.theme=s.theme||"auto"; s.name=s.name||"Cuibul";
   s.you=s.you||"Beatrice";
   if(!s.categories||!s.categories.length) s.categories=DEFAULT_CATS.map(c=>({...c}));
   if(!s.shops) s.shops=[{id:uid(),label:"Asian store"},{id:uid(),label:"DM"},{id:uid(),label:"Netto"}];
@@ -815,36 +817,36 @@ function renderToday(){
 
   // HERO: today's events
   const todayEvs=state.events.filter(e=>occursOn(e,t)).sort(sortEvents);
-  let hero=`<div class="h-lbl">📌 Today · ${new Date().toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"})}</div>`;
+  let hero=`<div class="h-lbl">🪹 Today · ${new Date().toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"})}</div>`;
   if(todayEvs.length){
     hero+=todayEvs.map(e=>{ const ty=EV_TYPES[e.type]||EV_TYPES.other;
       return `<div class="h-ev clickable" data-openevent="${e.id}"><div class="h-emoji">${ty.emoji}</div>
         <div class="h-main"><div class="h-title">${esc(e.title)}</div><div class="h-sub">${ty.label}${e.location?" · "+esc(e.location.split(",")[0]):""}</div></div>
         <div class="h-time">${e.time?fmtTime(e.time):"All day"}</div></div>`; }).join("");
-  } else { hero+=`<div class="h-none">No events today — enjoy the calm 🌤️</div>`; }
+  } else { hero+=`<div class="h-none">A quiet day at the nest 🪹</div>`; }
   $("#todayHero").innerHTML=hero;
 
   // To buy preview
   $("#overviewShop").innerHTML = shopActive.length
     ? `<div class="shop-preview">`+shopActive.slice(0,8).map(i=>`<span class="shop-chip clickable" data-go="shopping">${esc(i.name)}${i.qty?` <span class="sc-qty">${esc(i.qty)}</span>`:""}</span>`).join("")+(shopActive.length>8?`<span class="shop-chip" data-go="shopping" style="color:var(--text-faint)">+${shopActive.length-8} more</span>`:"")+`</div>`
-    : emptyMsg("🛒","Nothing on the list");
+    : emptyMsg("🪹","The nest is stocked — nothing to buy");
 
   const next3=upcoming.slice(0,3);
   $("#overviewNext").innerHTML=next3.length?next3.map(e=>{ const ty=EV_TYPES[e.type]||EV_TYPES.other;
     return `<div class="overview-item clickable" data-openevent="${e.id}"><div class="oi-icon" style="background:${ty.soft}">${ty.emoji}</div>
       <div class="oi-main"><div class="oi-title">${esc(e.title)}</div><div class="oi-sub">${ty.label}${attLabel(e)}</div></div>
-      <div class="oi-when">${fmtDay(e.date)}${e.time?`<br>${fmtTime(e.time)}`:""}</div></div>`; }).join("") : emptyMsg("📅","No upcoming events");
+      <div class="oi-when">${fmtDay(e.date)}${e.time?`<br>${fmtTime(e.time)}`:""}</div></div>`; }).join("") : emptyMsg("🪹","No events in the nest yet");
 
   const todays=remActive.filter(r=>r.due===t||r.due==="");
   $("#overviewReminders").innerHTML=todays.length?todays.slice(0,5).map(r=>{ const who=member(r.who);
-    return `<div class="overview-item"><div class="check" data-remtoggle="${r.id}"></div><div class="oi-main"><div class="oi-title">${esc(r.text)}</div></div>${who?`<div class="avatar" style="background:${who.color}">${initials(who.name)}</div>`:""}</div>`; }).join("") : emptyMsg("🎉","Nothing due today");
+    return `<div class="overview-item"><div class="check" data-remtoggle="${r.id}"></div><div class="oi-main"><div class="oi-title">${esc(r.text)}</div></div>${who?`<div class="avatar" style="background:${who.color}">${avGlyph(who)}</div>`:""}</div>`; }).join("") : emptyMsg("🐤","Nothing due today — rest easy");
 
   let mealHtml=""; for(let i=0;i<7;i++){ const day=addDays(t,i); const m=state.meals[day];
     if(m&&m.dinner) mealHtml+=`<div class="overview-item"><div class="oi-icon" style="background:var(--amber-soft)">🍽️</div><div class="oi-main"><div class="oi-title">${esc(m.dinner)}</div></div><div class="oi-when">${fmtDay(day)}</div></div>`; }
-  $("#overviewMeals").innerHTML=mealHtml||emptyMsg("🍽️","No dinners planned yet — tap Plan");
+  $("#overviewMeals").innerHTML=mealHtml||emptyMsg("🍽️","No dinners nested yet — tap Plan");
 
   $("#overviewNotes").innerHTML=state.notes.length?state.notes.slice(0,3).map(n=>{ const open=n.items.filter(i=>!i.done).length;
-    return `<div class="overview-item clickable" data-opennote="${n.id}"><div class="oi-icon" style="background:var(--purple-soft)">${n.emoji}</div><div class="oi-main"><div class="oi-title">${esc(n.title)}</div><div class="oi-sub">${open?`${open} open item${open>1?"s":""}`:"All done"}</div></div><div class="oi-when">${n.items.filter(i=>i.done).length}/${n.items.length}</div></div>`; }).join("") : emptyMsg("📝","No notes yet");
+    return `<div class="overview-item clickable" data-opennote="${n.id}"><div class="oi-icon" style="background:var(--purple-soft)">${n.emoji}</div><div class="oi-main"><div class="oi-title">${esc(n.title)}</div><div class="oi-sub">${open?`${open} open item${open>1?"s":""}`:"All done"}</div></div><div class="oi-when">${n.items.filter(i=>i.done).length}/${n.items.length}</div></div>`; }).join("") : emptyMsg("🪹","No notes in the nest yet");
 }
 function attLabel(e){ const ids=e.attendees||[]; if(!ids.length)return " · Everyone";
   const names=ids.map(id=>member(id)).filter(Boolean).map(m=>m.name); return names.length?" · "+names.join(", "):""; }
@@ -863,8 +865,8 @@ function renderShopping(){
   $$("#shopGroupToggle .gt-opt").forEach(b=>b.classList.toggle("on",b.dataset.g===shopGroup));
   const active=state.shopping.filter(i=>!i.done), done=state.shopping.filter(i=>i.done);
   const wrap=$("#shopList");
-  if(!active.length&&!done.length){ wrap.innerHTML=emptyMsg("🛒","Your list is empty — add something above"); }
-  else if(!active.length){ wrap.innerHTML=emptyMsg("✅","All done! Everything's checked off"); }
+  if(!active.length&&!done.length){ wrap.innerHTML=emptyMsg("🛒","The nest pantry’s bare — add something above"); }
+  else if(!active.length){ wrap.innerHTML=emptyMsg("✅","All gathered! Everything’s ticked off 🐣"); }
   else {
     let html="";
     if(shopGroup==="shop"){
@@ -959,11 +961,11 @@ let remFilter="active";
 function renderReminders(){
   const list=state.reminders.filter(r=>remFilter==="active"?!r.done:r.done).sort((a,b)=>{ if(!a.due)return 1; if(!b.due)return -1; return a.due<b.due?-1:1; });
   const wrap=$("#remList");
-  if(!list.length){ wrap.innerHTML=emptyMsg(remFilter==="active"?"🎉":"📭",remFilter==="active"?"No active reminders":"Nothing done yet"); return; }
+  if(!list.length){ wrap.innerHTML=emptyMsg(remFilter==="active"?"🎉":"📭",remFilter==="active"?"Nothing to do in the nest":"Nothing done yet"); return; }
   const t=todayISO();
   wrap.innerHTML=`<div class="card tight">`+list.map(r=>{ const who=member(r.who); let dueTxt="";
     if(r.due){ const overdue=r.due<t&&!r.done; dueTxt=`<span style="color:${overdue?"var(--pink)":"var(--text-soft)"}">${overdue?"⚠ ":""}${fmtDay(r.due)}</span>`; }
-    return `<div class="list-item"><div class="check ${r.done?"on":""}" data-remtoggle="${r.id}">${r.done?"✓":""}</div><div class="li-main"><div class="li-title ${r.done?"done":""}">${esc(r.text)}</div>${dueTxt?`<div class="li-sub">${dueTxt}</div>`:""}</div>${who?`<div class="avatar" style="background:${who.color}">${initials(who.name)}</div>`:""}<button class="del" data-remdel="${r.id}" aria-label="Delete">×</button></div>`; }).join("")+`</div>`;
+    return `<div class="list-item"><div class="check ${r.done?"on":""}" data-remtoggle="${r.id}">${r.done?"✓":""}</div><div class="li-main"><div class="li-title ${r.done?"done":""}">${esc(r.text)}</div>${dueTxt?`<div class="li-sub">${dueTxt}</div>`:""}</div>${who?`<div class="avatar" style="background:${who.color}">${avGlyph(who)}</div>`:""}<button class="del" data-remdel="${r.id}" aria-label="Delete">×</button></div>`; }).join("")+`</div>`;
 }
 
 /* ---------- Calendar ---------- */
@@ -977,7 +979,7 @@ function renderCalendar(){ const area=$("#calArea");
   area.innerHTML = calView==="agenda"?renderAgenda():calView==="week"?renderWeek():renderMonth(); }
 function renderAgenda(){
   const t=todayISO(); const list=state.events.filter(e=>occEnd(e)>=t).sort(sortEvents);
-  if(!list.length) return emptyMsg("📅","No upcoming events — add one above");
+  if(!list.length) return emptyMsg("🪹","No events in the nest yet — add one above");
   const byDay={}; list.forEach(e=>{ const disp=e.date<t?t:e.date; (byDay[disp]=byDay[disp]||[]).push(e); });
   let html=""; Object.keys(byDay).sort().forEach(day=>{ html+=`<div class="day-head">${fmtDay(day)}</div><div class="card tight">`; byDay[day].sort(sortEvents).forEach(e=>html+=eventRow(e)); html+=`</div>`; });
   return html;
@@ -992,7 +994,7 @@ function eventRow(e){ const ty=EV_TYPES[e.type]||EV_TYPES.other; const pend=attP
     <div class="ev-chevron">›</div></div>`;
 }
 function attAvatars(e){ const ids=(e.attendees&&e.attendees.length)?e.attendees:[]; if(!ids.length)return "";
-  return `<span class="avatar-stack">`+ids.slice(0,3).map(id=>{ const m=member(id); return m?`<span class="avatar" style="width:20px;height:20px;font-size:.62rem;background:${m.color}">${initials(m.name)}</span>`:""; }).join("")+`</span>`; }
+  return `<span class="avatar-stack">`+ids.slice(0,3).map(id=>{ const m=member(id); return m?`<span class="avatar" style="width:20px;height:20px;font-size:.62rem;background:${m.color}">${avGlyph(m)}</span>`:""; }).join("")+`</span>`; }
 function renderWeek(){
   const start=addDays(mondayOf(todayISO()),calWeekOffset*7);
   const sd=new Date(start+"T00:00:00"), ed=new Date(addDays(start,6)+"T00:00:00");
@@ -1008,7 +1010,7 @@ function renderWeek(){
   html+=`</div>`;
   const selEvs=eventsOn(calSelDay);
   html+=`<div class="sel-day-events"><div class="day-head">${fmtDayLong(calSelDay)}</div>`;
-  html+= selEvs.length?`<div class="card tight">${selEvs.map(eventRow).join("")}</div>`:emptyMsg("🗓️","Nothing planned this day");
+  html+= selEvs.length?`<div class="card tight">${selEvs.map(eventRow).join("")}</div>`:emptyMsg("🗓️","A calm day at the nest");
   html+=`</div>`;
   return html;
 }
@@ -1028,7 +1030,7 @@ function renderMonth(){
   html+=`</div>`;
   const selEvs=eventsOn(calSelDay);
   html+=`<div class="sel-day-events"><div class="day-head">${fmtDayLong(calSelDay)}</div>`;
-  html+= selEvs.length?`<div class="card tight">${selEvs.map(eventRow).join("")}</div>`:emptyMsg("🗓️","Nothing on this day");
+  html+= selEvs.length?`<div class="card tight">${selEvs.map(eventRow).join("")}</div>`:emptyMsg("🗓️","A calm day at the nest");
   html+=`</div>`;
   return html;
 }
@@ -1036,7 +1038,7 @@ function renderMonth(){
 /* ---------- Notes ---------- */
 function renderNotes(){
   const wrap=$("#noteList");
-  if(!state.notes.length){ wrap.innerHTML=emptyMsg("📝","No notes yet — create one above"); wrap.classList.remove("note-grid"); return; }
+  if(!state.notes.length){ wrap.innerHTML=emptyMsg("🪹","No notes in the nest yet — create one above"); wrap.classList.remove("note-grid"); return; }
   wrap.classList.add("note-grid");
   wrap.innerHTML=state.notes.map(n=>{ const total=n.items.length,done=n.items.filter(i=>i.done).length,pct=total?Math.round(done/total*100):0;
     return `<div class="note-card" data-opennote="${n.id}"><div class="nc-emoji">${n.emoji}</div><div class="nc-title">${esc(n.title)}</div><div class="nc-prog">${total?`${done}/${total} done`:"Empty"}</div>${total?`<div class="nc-bar"><div class="nc-fill" style="width:${pct}%"></div></div>`:""}</div>`; }).join("");
@@ -1047,7 +1049,7 @@ function renderMore(){
   $("#hubRem").textContent=`${state.reminders.filter(r=>!r.done).length} active`;
   $("#hubNotes").textContent=`${state.notes.length} note${state.notes.length!==1?"s":""}`;
   $("#setName").value=state.name; $("#setYou").value=state.you||"";
-  $("#memberList").innerHTML=state.members.map(m=>`<span class="member-tag"><span class="avatar" style="background:${m.color}">${initials(m.name)}</span>${esc(m.name)}<button class="del" data-memdel="${m.id}" style="font-size:1rem;padding:0 2px" aria-label="Remove">×</button></span>`).join("");
+  $("#memberList").innerHTML=state.members.map(m=>`<span class="member-tag"><span class="avatar" style="background:${m.color}">${avGlyph(m)}</span>${esc(m.name)}<button class="del" data-memdel="${m.id}" style="font-size:1rem;padding:0 2px" aria-label="Remove">×</button></span>`).join("");
   $$("#themeSeg button").forEach(b=>b.classList.toggle("on",b.dataset.t===(state.theme||"auto")));
   $("#alertToggle").textContent = alertsEnabled?"✓ Browser alerts on":"Enable browser alerts";
 }
@@ -1121,7 +1123,7 @@ document.addEventListener("click",e=>{
 /* ---------- settings: name/members/shops/cats/theme ---------- */
 $("#saveName").onclick=()=>{ const v=$("#setName").value.trim(); const y=$("#setYou").value.trim();
   if(v){ state.name=v; $("#familyName").textContent=v; } if(y){ state.you=y; } save(); renderToday(); pushPresence(); };
-function addMember(){ const inp=$("#memberInput"),v=inp.value.trim(); if(!v)return; state.members.push({id:uid(),name:v,color:MEMBER_COLORS[state.members.length%MEMBER_COLORS.length]}); inp.value=""; save(); renderMore(); }
+function addMember(){ const inp=$("#memberInput"),v=inp.value.trim(); if(!v)return; state.members.push({id:uid(),name:v,color:MEMBER_COLORS[state.members.length%MEMBER_COLORS.length],bird:BIRDS[state.members.length%BIRDS.length]}); inp.value=""; save(); renderMore(); }
 $("#memberAddBtn").onclick=addMember; $("#memberInput").addEventListener("keydown",e=>{ if(e.key==="Enter")addMember(); });
 $$("#themeSeg button").forEach(b=>b.onclick=()=>{ state.theme=b.dataset.t; save(); applyTheme(); renderMore(); });
 $("#resetBtn").onclick=()=>{ if(confirm("Reset everything back to the sample data?")){ state=seed(); save(); renderAll(); go("today",{root:true}); } };
@@ -1188,7 +1190,7 @@ function renderEvDetail(e){
   const needed=attNeeded(e), pend=attPending(e);
   const remLbl=(REMIND_OPTS.find(o=>o[0]===e.remind)||["none","No alert"])[1];
   let attHtml=needed.map(id=>{ const m=member(id); if(!m)return""; const ok=(e.confirmedBy||[]).includes(id);
-    return `<button class="chip confirm-chip ${ok?"active":""}" data-confirm="${id}"><span class="avatar" style="width:18px;height:18px;font-size:.6rem;background:${m.color}">${initials(m.name)}</span>${esc(m.name)} ${ok?"✓":""}</button>`; }).join("");
+    return `<button class="chip confirm-chip ${ok?"active":""}" data-confirm="${id}"><span class="avatar" style="width:18px;height:18px;font-size:.6rem;background:${m.color}">${avGlyph(m)}</span>${esc(m.name)} ${ok?"✓":""}</button>`; }).join("");
   const statusHtml = pend.length
     ? `<div class="status-line" style="color:var(--pink)">⏳ Awaiting: ${pend.map(id=>member(id)?member(id).name:"").filter(Boolean).join(", ")}</div>`
     : `<div class="status-line" style="color:var(--green)">✓ Everyone confirmed</div>`;

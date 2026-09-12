@@ -1,7 +1,7 @@
 {
-  "name": "Family Hub",
-  "short_name": "Family Hub",
-  "description": "Your family's shared dashboard — shopping, calendar, reminders, meals and notes.",
+  "name": "Cuibul",
+  "short_name": "Cuibul",
+  "description": "Your family's nest — shopping, calendar, reminders, meals and notes, shared live.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
