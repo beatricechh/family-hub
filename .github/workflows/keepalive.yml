@@ -1,0 +1,24 @@
+name: Keep Cuibul awake
+on:
+  schedule:
+    - cron: '0 7 */4 * *'   # every ~4 days (well under the 1-week pause limit)
+  workflow_dispatch:          # lets you run it by hand too
+permissions:
+  contents: write
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ping the database
+        run: |
+          curl -sS "https://ellaqhoocgkufqwrpvnz.supabase.co/rest/v1/collections?select=name&limit=1" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVsbGFxaG9vY2drdWZxd3Jwdm56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMzc3MzAsImV4cCI6MjEwNDgxMzczMH0.JJJtDMkbBLw2VfBxv_SUZF1-5mncfYgaBHoGd5bxXsc" > /dev/null
+      - name: Heartbeat (keeps this job enabled)
+        run: |
+          date -u > keepalive.txt
+          git config user.name "cuibul-keepalive"
+          git config user.email "actions@users.noreply.github.com"
+          git add keepalive.txt
+          git commit -m "keepalive" || echo "nothing to commit"
+          git push
