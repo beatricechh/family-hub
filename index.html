@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#d9772e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Family Hub</title>
+<style>
+  :root {
+    --bg: #f4f1ec; --surface: #ffffff; --surface-2: #faf8f4; --border: #e7e1d7;
+    --text: #2b2723; --text-soft: #6f665b; --text-faint: #a89e90;
+    --accent: #d9772e; --accent-soft: #fbe9d8; --accent-text: #b45a17;
+    --green: #4f9d69; --green-soft: #e3f1e6; --blue: #4a7fb5; --blue-soft: #e2ecf6;
+    --purple: #8367b0; --purple-soft: #ece4f5; --pink: #c65f86; --pink-soft: #f8e3ec;
+    --amber: #c7972f; --amber-soft: #f6ecd3;
+    --shadow: 0 1px 2px rgba(60,50,40,.06), 0 6px 20px rgba(60,50,40,.06);
+    --radius: 16px; --radius-sm: 11px; --nav-h: 66px;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg:#1a1815; --surface:#24211d; --surface-2:#2b2823; --border:#38332c;
+    --text:#f0ebe3; --text-soft:#b7ac9c; --text-faint:#7d7264;
+    --accent:#e8894a; --accent-soft:#3a2a1c; --accent-text:#f0a163;
+    --green:#6cba86; --green-soft:#223026; --blue:#6fa0d0; --blue-soft:#1e2a37;
+    --purple:#a186c9; --purple-soft:#2a2336; --pink:#d97ea1; --pink-soft:#35222b;
+    --amber:#d9b458; --amber-soft:#322a17;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.35);
+  } }
+  :root[data-theme="dark"] {
+    --bg:#1a1815; --surface:#24211d; --surface-2:#2b2823; --border:#38332c;
+    --text:#f0ebe3; --text-soft:#b7ac9c; --text-faint:#7d7264;
+    --accent:#e8894a; --accent-soft:#3a2a1c; --accent-text:#f0a163;
+    --green:#6cba86; --green-soft:#223026; --blue:#6fa0d0; --blue-soft:#1e2a37;
+    --purple:#a186c9; --purple-soft:#2a2336; --pink:#d97ea1; --pink-soft:#35222b;
+    --amber:#d9b458; --amber-soft:#322a17;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.35);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; line-height:1.45; -webkit-font-smoothing:antialiased; }
+  .app { max-width: 720px; margin: 0 auto; min-height: 100vh; padding: 0 16px calc(var(--nav-h) + 28px); padding-bottom: calc(var(--nav-h) + 28px + env(safe-area-inset-bottom,0px)); }
+
+  header.top { padding: 20px 2px 10px; display:flex; align-items:center; gap:10px; }
+  header.top .head-titles { flex:1; min-width:0; }
+  header.top h1 { font-size:1.5rem; margin:0; letter-spacing:-.02em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  header.top .date { color: var(--text-soft); font-size:.92rem; margin-top:2px; }
+  .icon-btn { border:1px solid var(--border); background: var(--surface); color: var(--text-soft); height:40px; min-width:40px; padding:0 12px; border-radius:11px; font-size:.95rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:5px; justify-content:center; flex:none; transition:background .15s, transform .1s; }
+  .icon-btn:active { transform: scale(.94); }
+  .icon-btn .chev { font-size:1.2rem; line-height:1; }
+
+  .view { display:none; animation:fade .22s ease; }
+  .view.active { display:block; }
+  @keyframes fade { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:none;} }
+
+  h2.section { font-size:1.06rem; margin:22px 2px 12px; letter-spacing:-.01em; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  h2.section:first-of-type { margin-top:6px; }
+  h2.section .link { font-size:.82rem; font-weight:600; color:var(--accent-text); cursor:pointer; }
+
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px; margin-bottom:14px; }
+  .card.tight { padding:6px; }
+
+  .greeting { padding:8px 2px 2px; }
+  .greeting .hi { font-size:1.35rem; font-weight:650; letter-spacing:-.02em; }
+
+  /* weather */
+  .weather { margin:12px 0 2px; }
+  .weather-card { display:flex; align-items:center; gap:14px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:13px 16px; }
+  .wc-temp { display:flex; align-items:center; gap:9px; flex:none; }
+  .wc-icon { font-size:1.9rem; line-height:1; }
+  .wc-now { font-size:1.7rem; font-weight:700; letter-spacing:-.02em; }
+  .wc-details { flex:1; min-width:0; display:flex; flex-wrap:wrap; gap:3px 14px; font-size:.86rem; color:var(--text-soft); }
+  .wc-details .wc-jacket { color:var(--accent-text); font-weight:600; }
+  .wc-loading { color:var(--text-faint); font-size:.88rem; padding:2px; }
+
+  /* presence (who's viewing now) */
+  .presence { display:flex; align-items:center; gap:6px; margin:10px 2px 0; flex-wrap:wrap; }
+  .presence .pr-lbl { font-size:.78rem; color:var(--text-soft); font-weight:600; margin-right:2px; }
+  .presence .avatar { box-shadow:0 0 0 2px var(--bg); }
+  .live-dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--green); margin-right:2px; animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.35;} }
+
+  /* Today hero (today's events) */
+  .hero { border-radius:var(--radius); padding:18px 18px 14px; margin:16px 0 4px; color:#fff; background:linear-gradient(135deg,#d9772e,#c2571a); box-shadow:0 8px 24px rgba(180,90,23,.28); }
+  :root[data-theme="dark"] .hero, :root:not([data-theme="light"]) .hero { background:linear-gradient(135deg,#c96a29,#a2481a); }
+  .hero .h-lbl { font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; opacity:.85; }
+  .hero .h-ev { display:flex; align-items:center; gap:11px; padding:9px 0; border-top:1px solid rgba(255,255,255,.18); margin-top:8px; }
+  .hero .h-ev:first-of-type { border-top:none; margin-top:6px; }
+  .hero .h-emoji { width:32px; height:32px; border-radius:9px; background:rgba(255,255,255,.2); display:grid; place-items:center; font-size:1rem; flex:none; }
+  .hero .h-main { flex:1; min-width:0; }
+  .hero .h-title { font-weight:600; font-size:.98rem; }
+  .hero .h-sub { font-size:.82rem; opacity:.9; }
+  .hero .h-time { font-size:.84rem; font-weight:600; white-space:nowrap; }
+  .hero .h-none { margin-top:8px; opacity:.92; font-size:.95rem; }
+
+  .tiles { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0 4px; }
+  .tile { border-radius:var(--radius); padding:15px; border:1px solid var(--border); cursor:pointer; transition:transform .1s; min-height:92px; display:flex; flex-direction:column; justify-content:space-between; }
+  .tile:active { transform:scale(.98); }
+  .tile .emoji { font-size:1.3rem; }
+  .tile .big { font-size:1.7rem; font-weight:700; letter-spacing:-.02em; line-height:1; }
+  .tile .lbl { font-size:.84rem; color:var(--text-soft); margin-top:3px; }
+  .tile.shop { background:var(--accent-soft); border-color:transparent; }
+  .tile.rem { background:var(--green-soft); border-color:transparent; }
+  .tile.cal { background:var(--blue-soft); border-color:transparent; }
+  .tile.meal { background:var(--amber-soft); border-color:transparent; }
+
+  .overview-item { display:flex; align-items:center; gap:11px; padding:11px 4px; border-bottom:1px solid var(--border); }
+  .overview-item:last-child { border-bottom:none; }
+  .overview-item .oi-icon { width:34px; height:34px; border-radius:10px; flex:none; display:grid; place-items:center; font-size:1rem; }
+  .overview-item .oi-main { flex:1; min-width:0; }
+  .overview-item .oi-title { font-weight:550; font-size:.96rem; }
+  .overview-item .oi-sub { font-size:.82rem; color:var(--text-soft); }
+  .overview-item .oi-when { font-size:.8rem; color:var(--text-faint); white-space:nowrap; text-align:right; }
+  .clickable { cursor:pointer; }
+
+  .shop-preview { display:flex; flex-wrap:wrap; gap:8px; }
+  .shop-chip { display:inline-flex; align-items:center; gap:7px; background:var(--surface-2); border:1px solid var(--border); border-radius:20px; padding:7px 13px; font-size:.9rem; }
+  .shop-chip .sc-qty { color:var(--accent-text); font-weight:600; font-size:.8rem; }
+
+  .empty { text-align:center; color:var(--text-faint); padding:26px 12px; font-size:.92rem; }
+  .empty .e-emoji { font-size:1.8rem; display:block; margin-bottom:6px; }
+
+  .addrow { display:flex; gap:8px; margin-bottom:14px; }
+  .addrow input[type=text] { flex:1; min-width:0; }
+  input[type=text], input[type=date], input[type=time], select, textarea { font:inherit; color:var(--text); background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:11px 13px; width:100%; }
+  input:focus, select:focus, textarea:focus { outline:2px solid var(--accent); outline-offset:-1px; border-color:transparent; }
+  ::placeholder { color:var(--text-faint); }
+  .btn { font:inherit; font-weight:600; background:var(--accent); color:#fff; border:none; border-radius:var(--radius-sm); padding:11px 16px; cursor:pointer; flex:none; transition:transform .1s, filter .15s; }
+  .btn:active { transform:scale(.96); }
+  .btn.ghost { background:var(--surface); color:var(--accent-text); border:1px solid var(--border); }
+  .btn.sm { padding:8px 12px; font-size:.88rem; }
+  .btn.block { width:100%; }
+
+  .cat-group { margin-bottom:6px; }
+  .cat-head { display:flex; align-items:center; gap:8px; padding:10px 6px 8px; }
+  .cat-head .grp-badge { width:26px; height:26px; border-radius:8px; display:grid; place-items:center; font-size:.95rem; color:#fff; flex:none; }
+  .cat-head .grp-name { font-size:.9rem; font-weight:700; letter-spacing:-.01em; color:var(--text); outline:none; border-radius:5px; padding:1px 3px; min-width:20px; }
+  .cat-head .grp-name:focus { background:var(--surface-2); box-shadow:0 0 0 2px var(--accent); }
+  .cat-head .grp-count { color:var(--text-faint); font-size:.8rem; font-weight:500; margin-left:auto; }
+  .drag-handle { color:var(--text-faint); cursor:grab; touch-action:none; font-size:1.05rem; padding:2px 3px; flex:none; user-select:none; line-height:1; }
+  .drag-handle:active { cursor:grabbing; }
+  .list-item.dragging, .cat-group.dragging { opacity:.65; }
+  .cat-group.dragging { box-shadow:0 8px 24px rgba(60,50,40,.18); }
+  .group-toggle { display:flex; align-items:center; gap:4px; justify-content:flex-end; margin-bottom:10px; font-size:.84rem; }
+  .group-toggle .gt-lbl { color:var(--text-faint); margin-right:2px; }
+  .group-toggle .gt-opt { background:none; border:none; font:inherit; font-size:.84rem; color:var(--text-faint); cursor:pointer; padding:3px 4px; font-weight:600; }
+  .group-toggle .gt-opt.on { color:var(--accent-text); border-bottom:2px solid var(--accent); }
+  .add-group { margin:2px 2px 4px; }
+  .add-group button { background:none; border:1px dashed var(--border); color:var(--text-soft); font:inherit; font-weight:600; font-size:.85rem; border-radius:var(--radius-sm); padding:10px; width:100%; cursor:pointer; }
+  .list-item { display:flex; align-items:center; gap:12px; padding:11px 6px; border-bottom:1px solid var(--border); }
+  .list-item:last-child { border-bottom:none; }
+  .check { width:24px; height:24px; border-radius:50%; border:2px solid var(--text-faint); flex:none; cursor:pointer; display:grid; place-items:center; transition:background .15s,border-color .15s; color:#fff; font-size:.8rem; }
+  .check.on { background:var(--green); border-color:var(--green); }
+  .li-main { flex:1; min-width:0; }
+  .li-title { font-size:.98rem; }
+  .li-sub { font-size:.8rem; color:var(--text-soft); }
+  .li-title.done { text-decoration:line-through; color:var(--text-faint); }
+  .qty-pill { font-size:.78rem; font-weight:600; color:var(--accent-text); background:var(--accent-soft); padding:2px 8px; border-radius:20px; flex:none; }
+  .del { background:none; border:none; color:var(--text-faint); cursor:pointer; font-size:1.15rem; padding:4px 6px; line-height:1; flex:none; }
+  .del:active { color:var(--pink); }
+
+  .avatar { width:26px; height:26px; border-radius:50%; flex:none; display:grid; place-items:center; font-size:.72rem; font-weight:700; color:#fff; }
+  .avatar-stack { display:flex; }
+  .avatar-stack .avatar { margin-left:-7px; border:2px solid var(--surface); }
+  .avatar-stack .avatar:first-child { margin-left:0; }
+  .chip-row { display:flex; flex-wrap:wrap; gap:7px; margin-top:4px; }
+  .chip { font-size:.82rem; padding:6px 12px; border-radius:20px; border:1px solid var(--border); background:var(--surface); cursor:pointer; color:var(--text-soft); display:inline-flex; align-items:center; gap:6px; }
+  .chip.active { background:var(--accent); color:#fff; border-color:transparent; }
+  .chip .dot { width:9px; height:9px; border-radius:50%; }
+
+  .seg { display:flex; background:var(--surface-2); border:1px solid var(--border); border-radius:11px; padding:3px; gap:3px; }
+  .seg button { flex:1; border:none; background:none; font:inherit; font-weight:600; font-size:.85rem; color:var(--text-soft); padding:8px; border-radius:8px; cursor:pointer; }
+  .seg button.on { background:var(--surface); color:var(--text); box-shadow:var(--shadow); }
+
+  .day-head { font-size:.82rem; font-weight:700; color:var(--accent-text); padding:16px 4px 2px; }
+  .event { display:flex; gap:12px; padding:12px 6px; border-bottom:1px solid var(--border); cursor:pointer; }
+  .event:last-child { border-bottom:none; }
+  .ev-time { width:58px; flex:none; font-size:.82rem; color:var(--text-soft); padding-top:1px; }
+  .ev-bar { width:4px; border-radius:4px; flex:none; }
+  .ev-main { flex:1; min-width:0; }
+  .ev-title { font-weight:550; font-size:.97rem; }
+  .ev-meta { font-size:.82rem; color:var(--text-soft); display:flex; align-items:center; gap:7px; flex-wrap:wrap; margin-top:3px; }
+  .type-pill { font-size:.72rem; font-weight:600; padding:2px 8px; border-radius:20px; }
+  .ev-badge { font-size:.66rem; font-weight:700; padding:2px 7px; border-radius:20px; background:var(--pink-soft); color:var(--pink); text-transform:uppercase; letter-spacing:.03em; }
+  .ev-chevron { color:var(--text-faint); align-self:center; font-size:1.1rem; flex:none; }
+
+  .navbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; gap:10px; }
+  .navbar .nb-title { font-weight:650; font-size:1rem; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .navbar .nb-arrows { display:flex; gap:6px; flex:none; }
+  .navbar .nb-arrows button, .today-btn { border:1px solid var(--border); background:var(--surface); color:var(--text-soft); border-radius:10px; width:38px; height:38px; font-size:1rem; cursor:pointer; }
+  .today-btn { width:auto; padding:0 12px; font:inherit; font-weight:600; font-size:.82rem; white-space:nowrap; }
+
+  /* week day strip */
+  .week-strip { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-bottom:6px; }
+  .ws-day { border:1px solid var(--border); background:var(--surface); border-radius:12px; padding:8px 2px 7px; text-align:center; cursor:pointer; box-shadow:var(--shadow); }
+  .ws-day .ws-wd { font-size:.66rem; font-weight:700; color:var(--text-faint); text-transform:uppercase; }
+  .ws-day .ws-num { font-size:1.05rem; font-weight:650; margin-top:1px; }
+  .ws-day.today { border-color:var(--accent); }
+  .ws-day.today .ws-num { color:var(--accent-text); }
+  .ws-day.sel { background:var(--accent); border-color:transparent; }
+  .ws-day.sel .ws-wd, .ws-day.sel .ws-num { color:#fff; }
+  .ws-dots { display:flex; gap:2px; justify-content:center; margin-top:4px; min-height:6px; }
+  .ws-dot { width:5px; height:5px; border-radius:50%; }
+  .ws-day.sel .ws-dot { outline:1px solid rgba(255,255,255,.7); }
+
+  .month-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+  .m-wd { text-align:center; font-size:.7rem; font-weight:700; color:var(--text-faint); padding:4px 0; text-transform:uppercase; }
+  .mcell { aspect-ratio:1/1.15; border-radius:10px; border:1px solid transparent; background:var(--surface); box-shadow:var(--shadow); display:flex; flex-direction:column; align-items:center; padding-top:6px; cursor:pointer; }
+  .mcell.dim { background:transparent; box-shadow:none; }
+  .mcell.dim .mnum { color:var(--text-faint); opacity:.5; }
+  .mcell .mnum { font-size:.82rem; font-weight:600; }
+  .mcell.today { border-color:var(--accent); }
+  .mcell.today .mnum { color:var(--accent-text); }
+  .mcell.sel { background:var(--accent); }
+  .mcell.sel .mnum { color:#fff; }
+  .mdots { display:flex; gap:2px; margin-top:3px; flex-wrap:wrap; justify-content:center; max-width:90%; }
+  .mdot { width:5px; height:5px; border-radius:50%; }
+  .mcell.sel .mdot { outline:1px solid rgba(255,255,255,.6); }
+  .sel-day-events { margin-top:16px; }
+
+  .meal-day { border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); box-shadow:var(--shadow); margin-bottom:10px; overflow:hidden; }
+  .meal-day.today { border-color:var(--accent); }
+  .meal-dhead { display:flex; align-items:center; gap:10px; padding:11px 14px 6px; }
+  .meal-dhead .dname { font-weight:650; font-size:.92rem; }
+  .meal-dhead .ddate { color:var(--text-faint); font-size:.8rem; }
+  .meal-dhead .edit { margin-left:auto; }
+  .meal-slots { padding:2px 14px 12px; }
+  .meal-slot { display:flex; gap:10px; padding:5px 0; align-items:center; font-size:.92rem; line-height:1.35; }
+  .meal-slot .ms-lbl { width:74px; flex:none; color:var(--text-faint); font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.03em; }
+  .meal-slot .ms-val { flex:1; min-width:0; }
+  .meal-slot .ms-val.ms-empty { color:var(--text-faint); }
+
+  .note-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:460px){ .note-grid { grid-template-columns:1fr; } }
+  .note-card { border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); box-shadow:var(--shadow); padding:15px; cursor:pointer; transition:transform .1s; }
+  .note-card:active { transform:scale(.98); }
+  .note-card .nc-emoji { font-size:1.4rem; }
+  .note-card .nc-title { font-weight:650; margin:6px 0 4px; letter-spacing:-.01em; }
+  .note-card .nc-prog { font-size:.82rem; color:var(--text-soft); }
+  .note-card .nc-bar { height:6px; border-radius:6px; background:var(--surface-2); margin-top:8px; overflow:hidden; }
+  .note-card .nc-fill { height:100%; background:var(--green); border-radius:6px; }
+
+  .hub-row { display:flex; align-items:center; gap:14px; padding:15px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); box-shadow:var(--shadow); margin-bottom:11px; cursor:pointer; transition:transform .1s; }
+  .hub-row:active { transform:scale(.99); }
+  .hub-row .hr-icon { width:44px; height:44px; border-radius:12px; display:grid; place-items:center; font-size:1.3rem; flex:none; }
+  .hub-row .hr-main { flex:1; }
+  .hub-row .hr-title { font-weight:600; }
+  .hub-row .hr-sub { font-size:.82rem; color:var(--text-soft); }
+  .hub-row .hr-arrow { color:var(--text-faint); font-size:1.2rem; }
+
+  .modal-back { position:fixed; inset:0; background:rgba(20,16,12,.45); display:none; align-items:flex-end; justify-content:center; z-index:50; animation:fade .18s ease; }
+  .modal-back.open { display:flex; }
+  .modal { background:var(--surface); width:100%; max-width:520px; border-radius:22px 22px 0 0; padding:20px 18px calc(24px + env(safe-area-inset-bottom,0px)); box-shadow:0 -8px 40px rgba(0,0,0,.25); animation:slideup .24s cubic-bezier(.2,.8,.2,1); max-height:90vh; overflow-y:auto; }
+  @media (min-width:560px){ .modal-back { align-items:center; } .modal { border-radius:22px; } }
+  @keyframes slideup { from{transform:translateY(40px);opacity:.6;} to{transform:none;opacity:1;} }
+  .modal h3 { margin:0 0 16px; font-size:1.15rem; letter-spacing:-.01em; display:flex; align-items:center; gap:8px; }
+  .field { margin-bottom:13px; }
+  .field label { display:block; font-size:.82rem; color:var(--text-soft); margin-bottom:5px; font-weight:550; }
+  .field-row { display:flex; gap:10px; }
+  .field-row .field { flex:1; }
+  .modal-actions { display:flex; gap:10px; margin-top:6px; }
+
+  /* event detail */
+  .det-head { display:flex; gap:12px; align-items:flex-start; margin-bottom:14px; }
+  .det-emoji { width:46px; height:46px; border-radius:12px; display:grid; place-items:center; font-size:1.4rem; flex:none; }
+  .det-title { font-size:1.2rem; font-weight:650; letter-spacing:-.01em; }
+  .det-row { display:flex; gap:11px; padding:10px 0; border-top:1px solid var(--border); font-size:.94rem; align-items:flex-start; }
+  .det-row .di { width:22px; flex:none; text-align:center; }
+  .det-row .dv { flex:1; min-width:0; }
+  .det-row .dv .dv-sub { color:var(--text-soft); font-size:.84rem; margin-top:2px; }
+  .map-frame { width:100%; height:150px; border:1px solid var(--border); border-radius:12px; margin-top:8px; display:block; background:var(--surface-2); }
+  .map-fallback { margin-top:8px; padding:14px; border:1px dashed var(--border); border-radius:12px; font-size:.85rem; color:var(--text-soft); text-align:center; }
+  .confirm-chip { cursor:pointer; }
+  .status-line { font-size:.86rem; font-weight:600; margin-top:6px; }
+
+  .sync-note { font-size:.82rem; color:var(--text-soft); background:var(--surface-2); border:1px dashed var(--border); border-radius:var(--radius-sm); padding:12px 14px; margin-bottom:14px; display:flex; gap:10px; align-items:flex-start; }
+  .sync-note b { color:var(--text); font-weight:650; }
+  .members-row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  .member-tag { display:inline-flex; align-items:center; gap:7px; background:var(--surface-2); border:1px solid var(--border); border-radius:20px; padding:4px 12px 4px 4px; font-size:.88rem; }
+  .manage-row { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+  .manage-row input { flex:1; }
+  .manage-row .mr-emoji { font-size:1.2rem; width:28px; text-align:center; flex:none; }
+
+  nav.bottom { position:fixed; left:0; right:0; bottom:0; background:var(--surface); border-top:1px solid var(--border); display:flex; justify-content:space-around; padding:8px 4px calc(8px + env(safe-area-inset-bottom,0px)); z-index:40; }
+  nav.bottom button { background:none; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px; color:var(--text-faint); font:inherit; font-size:.68rem; font-weight:600; padding:4px 8px; border-radius:12px; flex:1; transition:color .15s; }
+  nav.bottom button .ni { font-size:1.26rem; line-height:1; transition:transform .15s; }
+  nav.bottom button.active { color:var(--accent); }
+  nav.bottom button.active .ni { transform:translateY(-1px); }
+  .fh-screen{ position:fixed; inset:0; z-index:100; background:var(--bg); display:flex; align-items:center; justify-content:center; padding:24px; }
+  .fh-card{ width:100%; max-width:390px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:30px 22px; text-align:center; }
+  .fh-logo{ font-size:2.6rem; line-height:1; }
+  .fh-title{ font-size:1.4rem; font-weight:700; letter-spacing:-.02em; margin-top:8px; }
+  .fh-sub{ color:var(--text-soft); font-size:.92rem; margin:8px 0 18px; }
+  .fh-card input{ text-align:center; }
+  .fh-block{ text-align:left; }
+  .fh-lbl{ font-size:.82rem; font-weight:700; color:var(--text-soft); margin-bottom:6px; }
+  .fh-or{ color:var(--text-faint); font-size:.82rem; margin:16px 0; }
+  .fh-msg{ font-size:.86rem; color:var(--accent-text); margin-top:12px; min-height:18px; }
+</style>
+</head>
+<body>
+<div id="loadingScreen" class="fh-screen" hidden><div class="fh-card"><div class="fh-logo">🏡</div><div class="fh-title">Family Hub</div><div class="fh-sub">Loading…</div></div></div>
+<div id="authScreen" class="fh-screen" hidden><div class="fh-card">
+  <div class="fh-logo">🏡</div><div class="fh-title">Family Hub</div>
+  <div class="fh-sub">Sign in to your family dashboard. We'll email you a magic link — no password to remember.</div>
+  <input type="email" id="authEmail" placeholder="you@email.com" autocomplete="email" inputmode="email">
+  <button class="btn block" id="authSend" style="margin-top:10px;">Email me a sign-in link</button>
+  <div class="fh-msg" id="authMsg"></div>
+</div></div>
+<div id="onboardScreen" class="fh-screen" hidden><div class="fh-card">
+  <div class="fh-logo">🏡</div><div class="fh-title">Set up your family</div>
+  <div class="fh-sub">Start a new family space, or join one with an invite code.</div>
+  <div class="fh-block"><div class="fh-lbl">Start a new family</div>
+    <input type="text" id="obName" placeholder="e.g. The Chiritoi Family">
+    <button class="btn block" id="obCreate" style="margin-top:8px;">Create family</button></div>
+  <div class="fh-or">— or —</div>
+  <div class="fh-block"><div class="fh-lbl">Join an existing family</div>
+    <input type="text" id="obCode" placeholder="invite code" autocapitalize="off">
+    <button class="btn ghost block" id="obJoin" style="margin-top:8px;">Join family</button></div>
+  <div class="fh-msg" id="obMsg"></div>
+</div></div>
+<div class="app">
+  <header class="top">
+    <button class="icon-btn" id="backBtn" hidden><span class="chev">‹</span> Back</button>
+    <div class="head-titles">
+      <h1 id="familyName">Family Hub</h1>
+      <div class="date" id="todayDate"></div>
+    </div>
+  </header>
+
+  <!-- ===== TODAY ===== -->
+  <section class="view active" id="view-today">
+    <div class="greeting"><div class="hi" id="greetHi">Hello 👋</div></div>
+    <div class="presence" id="presence" hidden></div>
+    <div class="weather" id="weather"></div>
+
+    <div class="hero" id="todayHero"></div>
+
+    <div class="tiles">
+      <div class="tile shop" data-go="shopping"><div class="emoji">🛒</div><div><div class="big" id="tileShop">0</div><div class="lbl">to buy</div></div></div>
+      <div class="tile rem" data-go="reminders"><div class="emoji">✅</div><div><div class="big" id="tileRem">0</div><div class="lbl">reminders</div></div></div>
+      <div class="tile cal" data-go="calendar"><div class="emoji">📅</div><div><div class="big" id="tileCal">0</div><div class="lbl">upcoming</div></div></div>
+      <div class="tile meal" data-go="meals"><div class="emoji">🍽️</div><div><div class="big" id="tileMeal" style="font-size:1rem;font-weight:650;line-height:1.2;">Tonight</div><div class="lbl" id="tileMealLbl">tonight's dinner</div></div></div>
+    </div>
+
+    <h2 class="section">To buy <span class="link" data-go="shopping">Full list →</span></h2>
+    <div class="card" id="overviewShop"></div>
+
+    <h2 class="section">Coming up <span class="link" data-go="calendar">Calendar →</span></h2>
+    <div class="card" id="overviewNext"></div>
+
+    <h2 class="section">Today's reminders <span class="link" data-go="reminders">All →</span></h2>
+    <div class="card" id="overviewReminders"></div>
+
+    <h2 class="section">This week's dinners <span class="link" data-go="meals">Plan →</span></h2>
+    <div class="card" id="overviewMeals"></div>
+
+    <h2 class="section">Notes <span class="link" data-go="notes">All →</span></h2>
+    <div class="card" id="overviewNotes"></div>
+  </section>
+
+  <!-- ===== SHOPPING ===== -->
+  <section class="view" id="view-shopping">
+    <h2 class="section">Shopping list</h2>
+    <div class="sync-note" id="shopSync"><span>🔗</span><div><b>Shared list.</b> Changes save on this device.</div></div>
+    <div class="addrow"><input type="text" id="shopInput" placeholder="Add an item… e.g. Milk" autocomplete="off"><button class="btn" id="shopAddBtn">Add</button></div>
+    <div class="group-toggle" id="shopGroupToggle"><span class="gt-lbl">Group by</span><button class="gt-opt on" data-g="shop">Shop</button><button class="gt-opt" data-g="category">Category</button></div>
+    <div id="shopList"></div>
+    <div id="shopChecked"></div>
+    <div style="margin-top:8px;color:var(--text-faint);font-size:.8rem;text-align:center;">Tip: drag <b>⠿</b> to reorder · tap a heading to rename · tap an item to edit.</div>
+  </section>
+
+  <!-- ===== MEALS ===== -->
+  <section class="view" id="view-meals">
+    <h2 class="section">Meal plan</h2>
+    <div class="navbar">
+      <div class="nb-title" id="mealWeekTitle">This week</div>
+      <div class="nb-arrows"><button id="mealPrev" aria-label="Previous week">‹</button><button class="today-btn" id="mealToday">Today</button><button id="mealNext" aria-label="Next week">›</button></div>
+    </div>
+    <div id="mealList"></div>
+  </section>
+
+  <!-- ===== REMINDERS ===== -->
+  <section class="view" id="view-reminders">
+    <h2 class="section">Reminders</h2>
+    <div class="addrow"><input type="text" id="remInput" placeholder="Add a reminder…" autocomplete="off"><button class="btn" id="remAddBtn">Add</button></div>
+    <div class="seg" id="remFilter" style="margin-bottom:14px;"><button class="on" data-f="active">Active</button><button data-f="done">Done</button></div>
+    <div id="remList"></div>
+  </section>
+
+  <!-- ===== CALENDAR ===== -->
+  <section class="view" id="view-calendar">
+    <h2 class="section">Family calendar</h2>
+    <div class="sync-note" id="calSync"><span>📆</span><div><b>Family calendar.</b> Add events, attendees and confirmations here.</div></div>
+    <div class="seg" id="calSeg" style="margin-bottom:14px;"><button class="on" data-v="agenda">Agenda</button><button data-v="week">Week</button><button data-v="month">Month</button></div>
+    <button class="btn block" id="evAddBtn" style="margin-bottom:16px;">+ Add event</button>
+    <div id="calArea"></div>
+  </section>
+
+  <!-- ===== NOTES ===== -->
+  <section class="view" id="view-notes">
+    <h2 class="section">Shared notes</h2>
+    <div class="sync-note"><span>📝</span><div><b>For the whole family.</b> Running lists — questions for the next doctor visit, what to pack for daycare, anything you don't want to forget. Tap a note to open it.</div></div>
+    <button class="btn block" id="noteAddBtn" style="margin-bottom:16px;">+ New note</button>
+    <div class="note-grid" id="noteList"></div>
+  </section>
+
+  <!-- ===== MORE / HUB ===== -->
+  <section class="view" id="view-more">
+    <h2 class="section">More</h2>
+    <div class="hub-row" data-go="reminders"><div class="hr-icon" style="background:var(--green-soft)">✅</div><div class="hr-main"><div class="hr-title">Reminders</div><div class="hr-sub" id="hubRem">0 active</div></div><div class="hr-arrow">›</div></div>
+    <div class="hub-row" data-go="notes"><div class="hr-icon" style="background:var(--purple-soft)">📝</div><div class="hr-main"><div class="hr-title">Shared notes</div><div class="hr-sub" id="hubNotes">0 notes</div></div><div class="hr-arrow">›</div></div>
+    <div class="hub-row" data-go="meals"><div class="hr-icon" style="background:var(--amber-soft)">🍽️</div><div class="hr-main"><div class="hr-title">Meal plan</div><div class="hr-sub">Plan the week's meals</div></div><div class="hr-arrow">›</div></div>
+
+    <h2 class="section">Family &amp; settings</h2>
+    <div class="card">
+      <div class="field"><label>Your name (for the greeting)</label><input type="text" id="setYou" placeholder="e.g. Beatrice"></div>
+      <div class="field"><label>Family / dashboard name</label><input type="text" id="setName" placeholder="e.g. The Chiritoi Family"></div>
+      <button class="btn sm" id="saveName">Save</button>
+    </div>
+    <div class="card">
+      <div style="font-weight:600; margin-bottom:10px;">Family members</div>
+      <div class="members-row" id="memberList" style="margin-bottom:14px;"></div>
+      <div class="addrow" style="margin-bottom:0;"><input type="text" id="memberInput" placeholder="Add a family member…" autocomplete="off"><button class="btn" id="memberAddBtn">Add</button></div>
+    </div>
+    <div class="card">
+      <div style="font-weight:600; margin-bottom:10px;">Event alerts (this device)</div>
+      <div style="font-size:.85rem;color:var(--text-soft);margin-bottom:12px;">Demo: get a browser pop-up before events with an alert set, while this page is open. Real phone notifications come with the live version.</div>
+      <button class="btn ghost sm block" id="alertToggle">Enable browser alerts</button>
+    </div>
+    <div class="card">
+      <div style="font-weight:600; margin-bottom:10px;">Appearance</div>
+      <div class="seg" id="themeSeg"><button data-t="auto">Auto</button><button data-t="light">Light</button><button data-t="dark">Dark</button></div>
+    </div>
+    <div class="card" id="accountCard" hidden>
+      <div style="font-weight:600;margin-bottom:8px;">Your family</div>
+      <div style="font-size:.86rem;color:var(--text-soft);margin-bottom:10px;">Invite family: share this code — they tap <b>Join family</b> after signing in.</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;"><span id="inviteCode" style="font-size:1.35rem;font-weight:700;letter-spacing:.12em;">—</span><button class="btn ghost sm" id="copyInvite">Copy</button></div>
+      <button class="btn ghost sm block" id="signOutBtn">Sign out</button>
+    </div>
+    <div class="card" style="color:var(--text-soft); font-size:.9rem;">
+      <div id="aboutText">Your family dashboard.</div>
+      <button class="btn ghost sm block" id="resetBtn" style="margin-top:14px;">Reset to sample data</button>
+    </div>
+  </section>
+
+  <nav class="bottom" id="nav">
+    <button data-view="today" class="active"><span class="ni">🏠</span>Today</button>
+    <button data-view="shopping"><span class="ni">🛒</span>Shopping</button>
+    <button data-view="calendar"><span class="ni">📅</span>Calendar</button>
+    <button data-view="meals"><span class="ni">🍽️</span>Meals</button>
+    <button data-view="more"><span class="ni">☰</span>More</button>
+  </nav>
+</div>
+
+<!-- ===== Event ADD/EDIT modal ===== -->
+<div class="modal-back" id="evModal">
+  <div class="modal">
+    <h3 id="evModalTitle">Add event</h3>
+    <div class="field"><label>What's happening?</label><input type="text" id="evTitle" placeholder="e.g. Dentist – Mia"></div>
+    <div class="field-row">
+      <div class="field"><label>Starts</label><input type="date" id="evDate"></div>
+      <div class="field"><label>Time (optional)</label><input type="time" id="evTime"></div>
+    </div>
+    <div class="field"><label>Ends (optional — for trips)</label><input type="date" id="evEndDate"></div>
+    <div class="field"><label>Location (optional)</label><input type="text" id="evLoc" placeholder="e.g. Charité, Berlin"></div>
+    <div class="field"><label>Type</label><div class="chip-row" id="evTypes"></div></div>
+    <div class="field"><label>Who's going? <span style="color:var(--text-faint);font-weight:400">(none = everyone)</span></label><div class="chip-row" id="evWho"></div></div>
+    <div class="field"><label>Alert before it starts</label><select id="evRemind"></select></div>
+    <div class="modal-actions"><button class="btn ghost" id="evCancel" style="flex:1;">Cancel</button><button class="btn" id="evSave" style="flex:2;">Save event</button></div>
+  </div>
+</div>
+
+<!-- ===== Event DETAIL modal ===== -->
+<div class="modal-back" id="evDetail">
+  <div class="modal" id="evDetailBody"></div>
+</div>
+
+<!-- ===== Meal modal ===== -->
+<div class="modal-back" id="mealModal">
+  <div class="modal">
+    <h3 id="mealModalTitle">Plan meals</h3>
+    <div class="field"><label>🌅 Breakfast</label><input type="text" id="mealB" placeholder="e.g. Porridge & fruit"></div>
+    <div class="field"><label>🥪 Lunch</label><input type="text" id="mealL" placeholder="e.g. Leftovers"></div>
+    <div class="field"><label>🍽️ Dinner</label><input type="text" id="mealD" placeholder="e.g. Pasta with pesto"></div>
+    <div class="modal-actions"><button class="btn ghost" id="mealCancel" style="flex:1;">Cancel</button><button class="btn" id="mealSave" style="flex:2;">Save</button></div>
+  </div>
+</div>
+
+<!-- ===== Item edit modal ===== -->
+<div class="modal-back" id="itemModal">
+  <div class="modal">
+    <h3>Edit item</h3>
+    <div class="field"><label>Item</label><input type="text" id="itName"></div>
+    <div class="field-row">
+      <div class="field"><label>Amount</label><input type="text" id="itQty" placeholder="e.g. 2 / 500g"></div>
+      <div class="field"><label>Category</label><select id="itCat"></select></div>
+    </div>
+    <div class="field"><label>Shop</label><select id="itShop"></select></div>
+    <div class="modal-actions"><button class="btn ghost" id="itDelete" style="flex:1;color:var(--pink)">Delete</button><button class="btn" id="itSave" style="flex:2;">Save</button></div>
+  </div>
+</div>
+
+<!-- ===== New note modal ===== -->
+<div class="modal-back" id="newNoteModal">
+  <div class="modal">
+    <h3>New note</h3>
+    <div class="field"><label>Title</label><input type="text" id="nnTitle" placeholder="e.g. Questions for the paediatrician"></div>
+    <div class="field"><label>Icon</label><div class="chip-row" id="nnEmoji"></div></div>
+    <div class="modal-actions"><button class="btn ghost" id="nnCancel" style="flex:1;">Cancel</button><button class="btn" id="nnSave" style="flex:2;">Create</button></div>
+  </div>
+</div>
+
+<!-- ===== Note detail modal ===== -->
+<div class="modal-back" id="noteModal">
+  <div class="modal">
+    <h3><span id="ndEmoji">📝</span><input type="text" id="ndTitle" style="border:none;background:none;padding:4px 0;font:inherit;font-weight:650;font-size:1.1rem;"></h3>
+    <div id="ndItems" style="margin-bottom:12px;"></div>
+    <div class="addrow"><input type="text" id="ndInput" placeholder="Add an item…" autocomplete="off"><button class="btn" id="ndAdd">Add</button></div>
+    <div class="modal-actions"><button class="btn ghost" id="ndDelete" style="flex:1;color:var(--pink)">Delete note</button><button class="btn" id="ndClose" style="flex:2;">Done</button></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script>
+const STORE_KEY="familyHub.v3", OLD_KEY="familyHub.v2";
+const DEFAULT_CATS=[
+  {id:"produce",label:"Produce",emoji:"🥦"},{id:"dairy",label:"Dairy & eggs",emoji:"🥛"},
+  {id:"bakery",label:"Bakery",emoji:"🍞"},{id:"meat",label:"Meat & fish",emoji:"🍗"},
+  {id:"pantry",label:"Pantry",emoji:"🥫"},{id:"frozen",label:"Frozen",emoji:"🧊"},
+  {id:"household",label:"Household",emoji:"🧻"},{id:"other",label:"Other",emoji:"🛍️"},
+];
+const EV_TYPES={
+  doctor:{label:"Doctor",color:"var(--pink)",soft:"var(--pink-soft)",emoji:"🩺"},
+  travel:{label:"Travel",color:"var(--blue)",soft:"var(--blue-soft)",emoji:"✈️"},
+  school:{label:"School",color:"var(--purple)",soft:"var(--purple-soft)",emoji:"🎒"},
+  social:{label:"Social",color:"var(--green)",soft:"var(--green-soft)",emoji:"🎉"},
+  chore:{label:"Home",color:"var(--accent)",soft:"var(--accent-soft)",emoji:"🔧"},
+  other:{label:"Other",color:"var(--text-soft)",soft:"var(--surface-2)",emoji:"📌"},
+};
+const REMIND_OPTS=[["none","No alert"],["start","At start time"],["10m","10 minutes before"],["30m","30 minutes before"],["1h","1 hour before"],["1d","1 day before"]];
+const REMIND_MIN={none:null,start:0,"10m":10,"30m":30,"1h":60,"1d":1440};
+const MEMBER_COLORS=["#d9772e","#4a7fb5","#4f9d69","#8367b0","#c65f86","#c7972f"];
+const SHOP_COLORS=["#c0392b","#1f4e9c","#d4a017","#2e8b57","#7d3c98","#0e7c7b"];
+const SHOP_EMOJIS=["🏮","🧴","🛒","🥬","🏬","🛍️","🧺","💊"];
+const GREETINGS=["Hello","Hi there","Hey","Howdy","Greetings","Buenos días","Bună dimineața","Ciao","Hallo","Bonjour","Guten Morgen","Olá","Salut","G'day","Namaste","Welcome back"];
+const NOTE_EMOJIS=["📝","🩺","🎒","🏡","🎂","🛫","🎁","🛠️","📚","💡"];
+const DAYNAMES=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const DAYSHORT=["Mo","Tu","We","Th","Fr","Sa","Su"];
+
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const uid=()=>Math.random().toString(36).slice(2,9);
+const todayISO=()=>new Date().toLocaleDateString("en-CA");
+function isoOf(d){ return d.toLocaleDateString("en-CA"); }
+function addDays(iso,n){ const d=new Date(iso+"T00:00:00"); d.setDate(d.getDate()+n); return isoOf(d); }
+function mondayOf(iso){ const d=new Date(iso+"T00:00:00"); const wd=(d.getDay()+6)%7; d.setDate(d.getDate()-wd); return isoOf(d); }
+function fmtDay(iso){ const d=new Date(iso+"T00:00:00"),t=new Date(todayISO()+"T00:00:00"); const diff=Math.round((d-t)/86400000);
+  if(diff===0)return "Today"; if(diff===1)return "Tomorrow"; if(diff===-1)return "Yesterday";
+  return d.toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"}); }
+function fmtDayLong(iso){ return new Date(iso+"T00:00:00").toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"}); }
+function fmtTime(t){ if(!t)return ""; const[h,m]=t.split(":"); const d=new Date(); d.setHours(+h,+m); return d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}); }
+function initials(n){ return n.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase(); }
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function emptyMsg(e,t){ return `<div class="empty"><span class="e-emoji">${e}</span>${t}</div>`; }
+
+function seed(){
+  const t=todayISO(); const d=n=>addDays(t,n);
+  const mA=uid(),mB=uid(),mC=uid();
+  const sAsian=uid(),sDM=uid(),sNetto=uid();
+  return {
+    name:"Family Hub", you:"Beatrice", theme:"auto",
+    members:[{id:mA,name:"Mum",color:MEMBER_COLORS[0]},{id:mB,name:"Dad",color:MEMBER_COLORS[1]},{id:mC,name:"Mia",color:MEMBER_COLORS[3]}],
+    categories:DEFAULT_CATS.map(c=>({...c})),
+    shops:[{id:sAsian,label:"Asian store",color:"#c0392b",emoji:"🏮"},{id:sDM,label:"DM",color:"#1f4e9c",emoji:"🧴"},{id:sNetto,label:"Netto",color:"#d4a017",emoji:"🛒"}],
+    shopping:[
+      {id:uid(),name:"Milk",qty:"2",cat:"dairy",shop:sNetto,done:false},{id:uid(),name:"Bananas",qty:"",cat:"produce",shop:sNetto,done:false},
+      {id:uid(),name:"Spinach",qty:"1 bag",cat:"produce",shop:"",done:false},{id:uid(),name:"Sourdough loaf",qty:"",cat:"bakery",shop:"",done:false},
+      {id:uid(),name:"Chicken breast",qty:"500g",cat:"meat",shop:"",done:false},{id:uid(),name:"Rice noodles",qty:"",cat:"pantry",shop:sAsian,done:false},
+      {id:uid(),name:"Soy sauce",qty:"",cat:"pantry",shop:sAsian,done:false},
+      {id:uid(),name:"Nappies",qty:"1 pack",cat:"household",shop:sDM,done:false},{id:uid(),name:"Baby shampoo",qty:"",cat:"household",shop:sDM,done:false},
+      {id:uid(),name:"Eggs",qty:"12",cat:"dairy",shop:"",done:true},
+    ],
+    reminders:[
+      {id:uid(),text:"Pay the electricity bill",due:t,who:mB,done:false},
+      {id:uid(),text:"Call grandma",due:t,who:mA,done:false},
+      {id:uid(),text:"Sign Mia's permission slip",due:d(2),who:mA,done:false},
+      {id:uid(),text:"Book car service",due:d(5),who:mB,done:false},
+      {id:uid(),text:"Water the plants",due:"",who:mC,done:true},
+    ],
+    events:[
+      {id:uid(),title:"Mia – Swim class",date:d(0),endDate:"",time:"16:00",type:"school",attendees:[mC],location:"Stadtbad Mitte, Berlin",remind:"30m",confirmedBy:[mC],created:Date.now()},
+      {id:uid(),title:"Playdate at the park",date:d(0),endDate:"",time:"10:30",type:"social",attendees:[mA,mC],location:"Volkspark Friedrichshain, Berlin",remind:"none",confirmedBy:[mA],created:Date.now()},
+      {id:uid(),title:"Mia – Dentist checkup",date:d(1),endDate:"",time:"15:30",type:"doctor",attendees:[mC],location:"Zahnarztpraxis, Prenzlauer Berg, Berlin",remind:"1h",confirmedBy:[mC],created:Date.now()},
+      {id:uid(),title:"Parents' evening",date:d(3),endDate:"",time:"18:00",type:"school",attendees:[mA,mB],location:"Grundschule am Park, Berlin",remind:"1d",confirmedBy:[mA],created:Date.now()},
+      {id:uid(),title:"Family trip to Lisbon",date:d(9),endDate:d(13),time:"06:45",type:"travel",attendees:[mA,mB,mC],location:"Lisbon, Portugal",remind:"1d",confirmedBy:[mA,mB,mC],created:Date.now()},
+      {id:uid(),title:"Dinner with the Bakers",date:d(4),endDate:"",time:"19:30",type:"social",attendees:[],location:"",remind:"none",confirmedBy:[],created:Date.now()},
+      {id:uid(),title:"Dad – GP appointment",date:d(6),endDate:"",time:"09:15",type:"doctor",attendees:[mB],location:"Hausarzt Dr. Klein, Berlin",remind:"1h",confirmedBy:[mB],created:Date.now()},
+    ],
+    meals:{ [t]:{breakfast:"Porridge & berries",lunch:"",dinner:"Pasta with pesto"},[d(1)]:{breakfast:"",lunch:"",dinner:"Chicken traybake"},
+      [d(2)]:{breakfast:"",lunch:"",dinner:"Salmon & veg"},[d(3)]:{breakfast:"",lunch:"",dinner:"Taco night 🌮"},[d(4)]:{breakfast:"",lunch:"",dinner:"Leftovers"} },
+    notes:[
+      {id:uid(),emoji:"🩺",title:"Questions for Mia's doctor",items:[
+        {id:uid(),text:"Ask about the sleep regression",done:false},{id:uid(),text:"Vitamin D dosage for winter?",done:false},
+        {id:uid(),text:"When is the next vaccination due?",done:false},{id:uid(),text:"Is the cough anything to worry about?",done:true}]},
+      {id:uid(),emoji:"🎒",title:"Daycare bag",items:[
+        {id:uid(),text:"Spare clothes (2 sets)",done:true},{id:uid(),text:"Nappies – check stock",done:false},
+        {id:uid(),text:"Sun hat",done:false},{id:uid(),text:"Refill water bottle",done:false},{id:uid(),text:"Comfort blanket",done:true}]},
+      {id:uid(),emoji:"🏡",title:"House & errands",items:[{id:uid(),text:"Return library books",done:false},{id:uid(),text:"Order more coffee pods",done:false}]},
+    ],
+  };
+}
+
+let state;
+function migrate(s){
+  s.meals=s.meals||{}; s.notes=s.notes||[]; s.members=s.members||[]; s.shopping=s.shopping||[];
+  s.reminders=s.reminders||[]; s.events=s.events||[]; s.theme=s.theme||"auto"; s.name=s.name||"Family Hub";
+  s.you=s.you||"Beatrice";
+  if(!s.categories||!s.categories.length) s.categories=DEFAULT_CATS.map(c=>({...c}));
+  if(!s.shops) s.shops=[{id:uid(),label:"Asian store"},{id:uid(),label:"DM"},{id:uid(),label:"Netto"}];
+  s.shops.forEach((sh,i)=>{ if(!sh.color)sh.color=SHOP_COLORS[i%SHOP_COLORS.length]; if(!sh.emoji)sh.emoji=SHOP_EMOJIS[i%SHOP_EMOJIS.length]; });
+  s.shopping.forEach(i=>{ if(i.shop===undefined)i.shop=""; });
+  s.events.forEach(e=>{ if(!e.attendees)e.attendees=e.who?[e.who]:[]; if(e.endDate===undefined)e.endDate="";
+    if(e.location===undefined)e.location=""; if(e.remind===undefined)e.remind="none"; if(!e.confirmedBy)e.confirmedBy=[...e.attendees]; });
+  return s;
+}
+function load(){
+  try{ const raw=localStorage.getItem(STORE_KEY); if(raw){ state=migrate(JSON.parse(raw)); return; } }catch(e){}
+  try{ const old=localStorage.getItem(OLD_KEY); if(old){ state=migrate(JSON.parse(old)); save(); return; } }catch(e){}
+  state=seed();
+}
+function save(){ try{ localStorage.setItem(STORE_KEY,JSON.stringify(state)); }catch(e){} scheduleAlerts(); scheduleDbWrite(); }
+function member(id){ return state.members.find(m=>m.id===id); }
+
+/* ===================== SHARED BACKEND (Supabase) ===================== */
+/* Standalone app: family data lives in your Supabase project and syncs
+   live across everyone. If config.js has no keys yet, the app runs in
+   local-only preview so you can still see it. Device prefs (your name,
+   theme) stay in localStorage per device. */
+let sb=null, hid=null, meUser=null, routed=false, syncReady=false, pendingRender=false;
+let dbWriteTimer=null; const lastJSON={}; const myPresKey=uid();
+const COLS=["config","shopping","reminders","events","notes","meals"];
+function fhCfg(){ return (window.FH_CONFIG||{}); }
+function configured(){ const c=fhCfg(); return !!(c.url&&c.anonKey&&window.supabase); }
+
+function collDocs(){ return {
+  config:{name:state.name,members:state.members,shops:state.shops,categories:state.categories,seeded:true},
+  shopping:{items:state.shopping}, reminders:{items:state.reminders}, events:{items:state.events},
+  notes:{items:state.notes}, meals:{map:state.meals} }; }
+function applyDoc(name,v){ v=v||{};
+  if(name==="config"){ if(v.name)state.name=v.name; if(Array.isArray(v.members))state.members=v.members;
+    if(Array.isArray(v.shops))state.shops=v.shops; if(Array.isArray(v.categories))state.categories=v.categories; }
+  else if(name==="shopping") state.shopping=Array.isArray(v.items)?v.items:[];
+  else if(name==="reminders") state.reminders=Array.isArray(v.items)?v.items:[];
+  else if(name==="events") state.events=Array.isArray(v.items)?v.items:[];
+  else if(name==="notes") state.notes=Array.isArray(v.items)?v.items:[];
+  else if(name==="meals") state.meals=(v.map&&typeof v.map==="object")?v.map:{};
+}
+function scheduleDbWrite(){ if(!sb||!hid||!syncReady)return; clearTimeout(dbWriteTimer); dbWriteTimer=setTimeout(flushDb,350); }
+async function flushDb(){ if(!sb||!hid||!syncReady)return; const m=collDocs();
+  for(const name of COLS){ const j=JSON.stringify(m[name]); if(j!==lastJSON[name]){ lastJSON[name]=j;
+    try{ await sb.from("collections").upsert({household_id:hid,name:name,data:m[name],updated_at:new Date().toISOString()}); }catch(e){} } } }
+function editingLocks(){ if(dnd)return true; const a=document.activeElement;
+  if(a&&(a.isContentEditable||a.tagName==="INPUT"||a.tagName==="TEXTAREA"||a.tagName==="SELECT"))return true;
+  if($("#noteModal").classList.contains("open"))return true; return false; }
+function remoteRender(){ if(editingLocks()){ pendingRender=true; return; } renderAll(); }
+async function primeFromDb(){ try{ const {data,error}=await sb.from("collections").select("name,data").eq("household_id",hid);
+  if(!error&&data){ data.forEach(r=>{ applyDoc(r.name,r.data||{}); lastJSON[r.name]=JSON.stringify(collDocs()[r.name]); }); } }catch(e){} }
+function subscribeLive(){ try{ sb.channel("rt-"+hid)
+  .on("postgres_changes",{event:"*",schema:"public",table:"collections",filter:"household_id=eq."+hid}, payload=>{
+    const row=payload.new; if(!row||!row.name)return; applyDoc(row.name,row.data||{});
+    lastJSON[row.name]=JSON.stringify(collDocs()[row.name]); remoteRender(); })
+  .subscribe(); }catch(e){} }
+async function seedHousehold(){ const s=seed();
+  state.name=s.name; state.members=s.members; state.shops=s.shops; state.categories=s.categories;
+  state.shopping=s.shopping; state.reminders=s.reminders; state.events=s.events; state.notes=s.notes; state.meals=s.meals;
+  syncReady=true; const m=collDocs();
+  for(const name of COLS){ lastJSON[name]=JSON.stringify(m[name]);
+    try{ await sb.from("collections").upsert({household_id:hid,name:name,data:m[name]}); }catch(e){} } }
+
+/* presence — who's viewing now (Supabase Realtime) */
+let presenceCh=null;
+function initPresence(){ if(!sb||!hid)return;
+  presenceCh=sb.channel("pres-"+hid,{config:{presence:{key:myPresKey}}});
+  presenceCh.on("presence",{event:"sync"},()=>{ const st=presenceCh.presenceState(); const peers=[];
+    Object.keys(st).forEach(k=>{ const meta=(st[k]&&st[k][0])||{}; peers.push({name:meta.name||"Someone",color:meta.color||"#8a8a8a",you:k===myPresKey}); });
+    renderPresence(peers); })
+  .subscribe(async status=>{ if(status==="SUBSCRIBED"){ try{ await presenceCh.track({name:state.you||"Someone",color:"#d9772e"}); }catch(e){} } }); }
+function pushPresence(){ if(presenceCh){ try{ presenceCh.track({name:state.you||"Someone",color:"#d9772e"}); }catch(e){} } }
+function renderPresence(peers){ const el=$("#presence"); if(!el)return; const list=peers||[];
+  if(list.length<=1){ el.hidden=true; return; } el.hidden=false;
+  el.innerHTML='<span class="pr-lbl"><span class="live-dot"></span>Viewing now</span>'+list.slice(0,8).map(p=>
+    '<span class="avatar" title="'+esc(p.name)+(p.you?" (you)":"")+'" style="width:26px;height:26px;font-size:.68rem;background:'+p.color+';'+(p.you?"outline:2px solid var(--accent);outline-offset:1px;":"")+'">'+initials(p.name)+'</span>').join(""); }
+
+/* sync banners */
+function setSyncLive(live){ const s=$("#shopSync"), c=$("#calSync"), a=$("#aboutText");
+  if(live){ if(s)s.innerHTML='<span class="live-dot"></span><div><b>Shared &amp; live.</b> Everyone in your family sees changes to this list within seconds.</div>';
+    if(c)c.innerHTML='<span class="live-dot"></span><div><b>Shared &amp; live.</b> New events and confirmations sync to the whole family right away.</div>';
+    if(a)a.innerHTML='<b style="color:var(--text)">Your family\'s shared dashboard.</b> Everyone you invite sees the same list, calendar, reminders, meals and notes — live.'; }
+  else { if(s)s.innerHTML='<span>🔗</span><div><b>Preview mode.</b> Not connected to the cloud yet (add your Supabase keys in config.js).</div>';
+    if(c)c.innerHTML='<span>📆</span><div><b>Preview mode.</b> Not connected to the cloud yet.</div>';
+    if(a)a.innerHTML='Local preview — not connected to the cloud yet.'; }
+}
+
+/* screens */
+function showApp(){ ["loadingScreen","authScreen","onboardScreen"].forEach(s=>{ const el=$("#"+s); if(el)el.hidden=true; }); $(".app").hidden=false; }
+function showAuth(){ $(".app").hidden=true; $("#loadingScreen").hidden=true; $("#onboardScreen").hidden=true; $("#authScreen").hidden=false; }
+function showOnboard(){ $(".app").hidden=true; $("#loadingScreen").hidden=true; $("#authScreen").hidden=true; $("#onboardScreen").hidden=false; }
+function showLoading(){ $("#loadingScreen").hidden=false; $(".app").hidden=true; $("#authScreen").hidden=true; $("#onboardScreen").hidden=true; }
+
+async function boot(){
+  load();                       // localStorage cache -> instant paint
+  if(!configured()){ setSyncLive(false); renderAll(); renderWeather(); showApp(); return; }
+  sb = window.supabase.createClient(fhCfg().url, fhCfg().anonKey);
+  renderWeather(); showLoading();
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    sb.auth.onAuthStateChange((_e,ns)=>{ routeSession(ns); });
+    await routeSession(session);
+  }catch(e){ setSyncLive(false); renderAll(); showApp(); }
+}
+async function routeSession(session){
+  if(!session){ routed=false; hid=null; showAuth(); return; }
+  meUser=session.user; if(routed) return;
+  try{ const { data, error } = await sb.from("household_members").select("household_id").limit(1);
+    if(error){ showAuth(); return; }
+    if(!data||!data.length){ showOnboard(); return; }
+    hid=data[0].household_id; routed=true; await enterApp(false);
+  }catch(e){ showAuth(); }
+}
+async function enterApp(justCreated){
+  showApp(); const ac=$("#accountCard"); if(ac)ac.hidden=false;
+  if(!justCreated){ await primeFromDb(); syncReady=true; }
+  renderAll(); subscribeLive(); initPresence(); setSyncLive(true); loadInviteCode();
+}
+async function loadInviteCode(){ try{ const {data}=await sb.from("households").select("invite_code").eq("id",hid).single();
+  if(data){ const el=$("#inviteCode"); if(el)el.textContent=data.invite_code; } }catch(e){} }
+
+function initAuthUI(){
+  const send=$("#authSend"); if(send)send.onclick=async()=>{ const email=($("#authEmail").value||"").trim(); if(!email)return;
+    $("#authMsg").textContent="Sending…";
+    try{ const {error}=await sb.auth.signInWithOtp({email, options:{emailRedirectTo:location.href}});
+      $("#authMsg").textContent = error? ("Couldn't send: "+error.message) : "Check your email for a sign-in link ✉️"; }
+    catch(e){ $("#authMsg").textContent="Something went wrong — try again."; } };
+  const cr=$("#obCreate"); if(cr)cr.onclick=async()=>{ const name=($("#obName").value||"").trim()||"Family Hub";
+    $("#obMsg").textContent="Creating…";
+    try{ const {data,error}=await sb.rpc("create_household",{p_name:name});
+      if(error||!data){ $("#obMsg").textContent="Couldn't create: "+(error?error.message:""); return; }
+      hid=(data.id||(data[0]&&data[0].id)); routed=true; await seedHousehold(); await enterApp(true); }
+    catch(e){ $("#obMsg").textContent="Something went wrong."; } };
+  const jn=$("#obJoin"); if(jn)jn.onclick=async()=>{ const code=($("#obCode").value||"").trim().toLowerCase(); if(!code)return;
+    $("#obMsg").textContent="Joining…";
+    try{ const {data,error}=await sb.rpc("join_household",{p_code:code});
+      if(error||!data){ $("#obMsg").textContent="That code didn't work."; return; }
+      hid=(data.id||(data[0]&&data[0].id)); routed=true; await enterApp(false); }
+    catch(e){ $("#obMsg").textContent="Something went wrong."; } };
+  const so=$("#signOutBtn"); if(so)so.onclick=async()=>{ try{ await sb.auth.signOut(); }catch(e){} location.reload(); };
+  const cp=$("#copyInvite"); if(cp)cp.onclick=async()=>{ const t=($("#inviteCode").textContent||"").trim();
+    try{ await navigator.clipboard.writeText(t); cp.textContent="Copied!"; setTimeout(()=>cp.textContent="Copy",1500); }catch(e){} };
+}
+
+function cat(id){ return state.categories.find(c=>c.id===id)||{id:"other",label:"Other",emoji:"🛍️"}; }
+function shopName(id){ const s=state.shops.find(x=>x.id===id); return s?s.label:""; }
+
+/* attendee helpers */
+function attNeeded(e){ return (e.attendees&&e.attendees.length)?e.attendees:state.members.map(m=>m.id); }
+function attPending(e){ return attNeeded(e).filter(id=>!(e.confirmedBy||[]).includes(id)); }
+
+/* ---------- render all ---------- */
+function renderAll(){ $("#familyName").textContent=state.name; applyTheme();
+  renderToday(); renderShopping(); renderMeals(); renderReminders(); renderCalendar(); renderNotes(); renderMore(); }
+const greetWord=GREETINGS[Math.floor(Math.random()*GREETINGS.length)];
+function renderHeader(){ const now=new Date();
+  $("#todayDate").textContent=now.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"});
+  $("#greetHi").textContent=`${greetWord}, ${state.you||"there"} 👋`; }
+
+/* ---------- Weather (Berlin via Open-Meteo) ---------- */
+function wIcon(code){ if(code===0)return "☀️"; if(code<=2)return "🌤️"; if(code===3)return "☁️"; if(code<=48)return "🌫️";
+  if(code<=57)return "🌦️"; if(code<=67)return "🌧️"; if(code<=77)return "🌨️"; if(code<=82)return "🌧️"; if(code<=86)return "🌨️"; return "⛈️"; }
+function jacket(maxT,rain){ let j; if(maxT>=20)j="No jacket needed 👕"; else if(maxT>=14)j="A thin jacket 🧥"; else j="A light jacket 🧥";
+  if(rain>=50)j+=" · umbrella ☔"; return j; }
+function renderWeather(){
+  const el=$("#weather"); if(!el)return;
+  el.innerHTML=`<div class="weather-card"><div class="wc-loading">Loading Berlin weather…</div></div>`;
+  fetch("https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.405&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FBerlin&forecast_days=1")
+    .then(r=>r.json()).then(j=>{
+      const cur=Math.round(j.current.temperature_2m), code=j.current.weather_code;
+      const hi=Math.round(j.daily.temperature_2m_max[0]), lo=Math.round(j.daily.temperature_2m_min[0]);
+      const rain=j.daily.precipitation_probability_max[0]??0;
+      el.innerHTML=`<div class="weather-card">
+        <div class="wc-temp"><span class="wc-icon">${wIcon(code)}</span><span class="wc-now">${cur}°</span></div>
+        <div class="wc-details"><span>Berlin · H ${hi}° / L ${lo}°</span><span>🌧 ${rain}% rain</span><span class="wc-jacket">${jacket(hi,rain)}</span></div></div>`;
+    })
+    .catch(()=>{ el.innerHTML=`<div class="weather-card"><div class="wc-loading">🌤️ Live weather isn't available in the shared app yet.</div></div>`; });
+}
+
+/* ---------- Today ---------- */
+function renderToday(){
+  renderHeader();
+  const t=todayISO();
+  const shopActive=state.shopping.filter(i=>!i.done);
+  const remActive=state.reminders.filter(r=>!r.done);
+  const upcoming=state.events.filter(e=>occEnd(e)>=t).sort(sortEvents);
+  const dueToday=remActive.filter(r=>r.due===t).length;
+
+  $("#tileShop").textContent=shopActive.length;
+  $("#tileRem").textContent=remActive.length;
+  $("#tileCal").textContent=upcoming.length;
+  const dTonight=state.meals[t]&&state.meals[t].dinner;
+  $("#tileMeal").textContent=dTonight||"Not set yet"; $("#tileMealLbl").textContent="tonight's dinner";
+
+  // HERO: today's events
+  const todayEvs=state.events.filter(e=>occursOn(e,t)).sort(sortEvents);
+  let hero=`<div class="h-lbl">📌 Today · ${new Date().toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"})}</div>`;
+  if(todayEvs.length){
+    hero+=todayEvs.map(e=>{ const ty=EV_TYPES[e.type]||EV_TYPES.other;
+      return `<div class="h-ev clickable" data-openevent="${e.id}"><div class="h-emoji">${ty.emoji}</div>
+        <div class="h-main"><div class="h-title">${esc(e.title)}</div><div class="h-sub">${ty.label}${e.location?" · "+esc(e.location.split(",")[0]):""}</div></div>
+        <div class="h-time">${e.time?fmtTime(e.time):"All day"}</div></div>`; }).join("");
+  } else { hero+=`<div class="h-none">No events today — enjoy the calm 🌤️</div>`; }
+  $("#todayHero").innerHTML=hero;
+
+  // To buy preview
+  $("#overviewShop").innerHTML = shopActive.length
+    ? `<div class="shop-preview">`+shopActive.slice(0,8).map(i=>`<span class="shop-chip clickable" data-go="shopping">${esc(i.name)}${i.qty?` <span class="sc-qty">${esc(i.qty)}</span>`:""}</span>`).join("")+(shopActive.length>8?`<span class="shop-chip" data-go="shopping" style="color:var(--text-faint)">+${shopActive.length-8} more</span>`:"")+`</div>`
+    : emptyMsg("🛒","Nothing on the list");
+
+  const next3=upcoming.slice(0,3);
+  $("#overviewNext").innerHTML=next3.length?next3.map(e=>{ const ty=EV_TYPES[e.type]||EV_TYPES.other;
+    return `<div class="overview-item clickable" data-openevent="${e.id}"><div class="oi-icon" style="background:${ty.soft}">${ty.emoji}</div>
+      <div class="oi-main"><div class="oi-title">${esc(e.title)}</div><div class="oi-sub">${ty.label}${attLabel(e)}</div></div>
+      <div class="oi-when">${fmtDay(e.date)}${e.time?`<br>${fmtTime(e.time)}`:""}</div></div>`; }).join("") : emptyMsg("📅","No upcoming events");
+
+  const todays=remActive.filter(r=>r.due===t||r.due==="");
+  $("#overviewReminders").innerHTML=todays.length?todays.slice(0,5).map(r=>{ const who=member(r.who);
+    return `<div class="overview-item"><div class="check" data-remtoggle="${r.id}"></div><div class="oi-main"><div class="oi-title">${esc(r.text)}</div></div>${who?`<div class="avatar" style="background:${who.color}">${initials(who.name)}</div>`:""}</div>`; }).join("") : emptyMsg("🎉","Nothing due today");
+
+  let mealHtml=""; for(let i=0;i<7;i++){ const day=addDays(t,i); const m=state.meals[day];
+    if(m&&m.dinner) mealHtml+=`<div class="overview-item"><div class="oi-icon" style="background:var(--amber-soft)">🍽️</div><div class="oi-main"><div class="oi-title">${esc(m.dinner)}</div></div><div class="oi-when">${fmtDay(day)}</div></div>`; }
+  $("#overviewMeals").innerHTML=mealHtml||emptyMsg("🍽️","No dinners planned yet — tap Plan");
+
+  $("#overviewNotes").innerHTML=state.notes.length?state.notes.slice(0,3).map(n=>{ const open=n.items.filter(i=>!i.done).length;
+    return `<div class="overview-item clickable" data-opennote="${n.id}"><div class="oi-icon" style="background:var(--purple-soft)">${n.emoji}</div><div class="oi-main"><div class="oi-title">${esc(n.title)}</div><div class="oi-sub">${open?`${open} open item${open>1?"s":""}`:"All done"}</div></div><div class="oi-when">${n.items.filter(i=>i.done).length}/${n.items.length}</div></div>`; }).join("") : emptyMsg("📝","No notes yet");
+}
+function attLabel(e){ const ids=e.attendees||[]; if(!ids.length)return " · Everyone";
+  const names=ids.map(id=>member(id)).filter(Boolean).map(m=>m.name); return names.length?" · "+names.join(", "):""; }
+
+/* ---------- Shopping ---------- */
+let shopGroup="shop", pendingFocusGroup=null;
+function grpHeader(id,emoji,badgeColor,label,count,editable,draggable){
+  return `<div class="cat-head">
+    <span class="drag-handle group-handle" ${draggable?"":'style="visibility:hidden;pointer-events:none"'}>⠿</span>
+    <span class="grp-badge" style="background:${badgeColor}">${emoji}</span>
+    <span class="grp-name" ${editable?`contenteditable="true" data-editgroup="${id}"`:""}>${esc(label)}</span>
+    <span class="grp-count">${count?count+" item"+(count>1?"s":""):""}</span></div>`;
+}
+function emptyRow(){ return `<div class="wk-empty" style="border:none;color:var(--text-faint);padding:9px 8px;font-size:.82rem;">Empty — drag items here</div>`; }
+function renderShopping(){
+  $$("#shopGroupToggle .gt-opt").forEach(b=>b.classList.toggle("on",b.dataset.g===shopGroup));
+  const active=state.shopping.filter(i=>!i.done), done=state.shopping.filter(i=>i.done);
+  const wrap=$("#shopList");
+  if(!active.length&&!done.length){ wrap.innerHTML=emptyMsg("🛒","Your list is empty — add something above"); }
+  else if(!active.length){ wrap.innerHTML=emptyMsg("✅","All done! Everything's checked off"); }
+  else {
+    let html="";
+    if(shopGroup==="shop"){
+      state.shops.forEach(s=>{ const items=active.filter(i=>i.shop===s.id);
+        html+=`<div class="cat-group card tight" data-group-id="${s.id}">`+grpHeader(s.id,s.emoji,s.color,s.label,items.length,true,true)+(items.length?items.map(shopRow).join(""):emptyRow())+`</div>`; });
+      const noShop=active.filter(i=>!i.shop||!state.shops.find(x=>x.id===i.shop));
+      html+=`<div class="cat-group card tight" data-group-id="__none">`+grpHeader("__none","🛍️","var(--text-faint)","No store set",noShop.length,false,false)+(noShop.length?noShop.map(shopRow).join(""):emptyRow())+`</div>`;
+      html+=`<div class="add-group"><button data-addgroup="shop">＋ Add store</button></div>`;
+    } else {
+      state.categories.forEach(c=>{ const items=active.filter(i=>i.cat===c.id);
+        html+=`<div class="cat-group card tight" data-group-id="${c.id}">`+grpHeader(c.id,c.emoji,"var(--surface-2)",c.label,items.length,true,true)+(items.length?items.map(shopRow).join(""):emptyRow())+`</div>`; });
+      html+=`<div class="add-group"><button data-addgroup="category">＋ Add category</button></div>`;
+    }
+    wrap.innerHTML=html;
+  }
+  const c=$("#shopChecked");
+  if(done.length){ c.innerHTML=`<div class="cat-head" style="padding-left:6px;justify-content:space-between"><span style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-faint)">Checked off (${done.length})</span><button class="btn ghost sm" id="clearChecked">Clear</button></div><div class="card tight">${done.map(shopRow).join("")}</div>`;
+    $("#clearChecked").onclick=()=>{ state.shopping=state.shopping.filter(i=>!i.done); save(); renderShopping(); renderToday(); }; }
+  else c.innerHTML="";
+  if(pendingFocusGroup){ const sp=wrap.querySelector(`[data-editgroup="${pendingFocusGroup}"]`); if(sp){ sp.focus(); document.getSelection().selectAllChildren(sp); } pendingFocusGroup=null; }
+}
+function shopRow(i){ const meta=[]; if(shopGroup==="shop"){ meta.push(esc(cat(i.cat).label)); } else if(i.shop&&shopName(i.shop)){ meta.push("🏬 "+esc(shopName(i.shop))); }
+  return `<div class="list-item" data-id="${i.id}"><span class="drag-handle">⠿</span><div class="check ${i.done?"on":""}" data-shoptoggle="${i.id}">${i.done?"✓":""}</div>
+    <div class="li-main clickable" data-itemedit="${i.id}"><div class="li-title ${i.done?"done":""}">${esc(i.name)}</div>${meta.length?`<div class="li-sub">${meta.join(" · ")}</div>`:""}</div>
+    ${i.qty?`<span class="qty-pill">${esc(i.qty)}</span>`:""}<button class="del" data-shopdel="${i.id}" aria-label="Delete">×</button></div>`;
+}
+/* ---- drag & drop reorder (pointer-based, works on touch + mouse) ---- */
+const shopListEl=$("#shopList");
+let dnd=null;
+shopListEl.addEventListener("pointerdown",e=>{
+  const h=e.target.closest(".drag-handle"); if(!h||h.style.pointerEvents==="none")return;
+  const isGroup=h.classList.contains("group-handle");
+  const el=isGroup?h.closest(".cat-group"):h.closest(".list-item"); if(!el)return;
+  e.preventDefault(); dnd={el,isGroup}; el.classList.add("dragging"); try{ h.setPointerCapture(e.pointerId); }catch(err){}
+});
+shopListEl.addEventListener("pointermove",e=>{
+  if(!dnd)return; e.preventDefault(); const x=e.clientX,y=e.clientY;
+  if(dnd.isGroup){
+    const groups=[...shopListEl.querySelectorAll(".cat-group:not(.dragging)")]; let placed=false;
+    for(const g of groups){ if(g.dataset.groupId==="__none")continue; const r=g.getBoundingClientRect();
+      if(y<r.top+r.height/2){ shopListEl.insertBefore(dnd.el,g); placed=true; break; } }
+    if(!placed){ const none=shopListEl.querySelector('[data-group-id="__none"]'), addg=shopListEl.querySelector(".add-group");
+      shopListEl.insertBefore(dnd.el, none||addg||null); }
+  } else {
+    const tgt=document.elementFromPoint(x,y); if(!tgt||!tgt.closest)return;
+    const overItem=tgt.closest(".list-item"), overGroup=tgt.closest(".cat-group");
+    if(overItem&&overItem!==dnd.el&&shopListEl.contains(overItem)){ const r=overItem.getBoundingClientRect();
+      if(y<r.top+r.height/2) overItem.parentElement.insertBefore(dnd.el,overItem); else overItem.parentElement.insertBefore(dnd.el,overItem.nextSibling); }
+    else if(overGroup&&shopListEl.contains(overGroup)){ const er=overGroup.querySelector(".wk-empty"); if(er)er.remove(); overGroup.appendChild(dnd.el); }
+  }
+});
+function endDnd(){ if(!dnd)return; dnd.el.classList.remove("dragging"); dnd=null; rebuildShopFromDOM(); }
+shopListEl.addEventListener("pointerup",endDnd);
+shopListEl.addEventListener("pointercancel",endDnd);
+function rebuildShopFromDOM(){
+  const groups=[...shopListEl.querySelectorAll(".cat-group")]; const domGroupIds=[]; const ordered=[];
+  const byId=Object.fromEntries(state.shopping.map(i=>[i.id,i]));
+  groups.forEach(g=>{ const gid=g.dataset.groupId; domGroupIds.push(gid);
+    [...g.querySelectorAll(".list-item")].forEach(it=>{ const item=byId[it.dataset.id]; if(!item)return;
+      if(shopGroup==="shop") item.shop=(gid==="__none")?"":gid; else item.cat=gid; ordered.push(item); }); });
+  const done=state.shopping.filter(i=>i.done);
+  const capt=new Set(ordered.map(i=>i.id)); const miss=state.shopping.filter(i=>!i.done&&!capt.has(i.id));
+  state.shopping=[...ordered,...miss,...done];
+  if(shopGroup==="shop"){ const ids=domGroupIds.filter(g=>g!=="__none"); const rest=state.shops.filter(s=>!ids.includes(s.id));
+    state.shops=[...ids.map(id=>state.shops.find(s=>s.id===id)).filter(Boolean),...rest]; }
+  else { const rest=state.categories.filter(c=>!domGroupIds.includes(c.id));
+    state.categories=[...domGroupIds.map(id=>state.categories.find(c=>c.id===id)).filter(Boolean),...rest]; }
+  save(); renderShopping(); renderToday();
+}
+/* ---- inline rename of group headers ---- */
+shopListEl.addEventListener("keydown",e=>{ if(e.target.closest("[data-editgroup]")&&e.key==="Enter"){ e.preventDefault(); e.target.blur(); } });
+shopListEl.addEventListener("focusout",e=>{ const sp=e.target.closest("[data-editgroup]"); if(!sp)return; const gid=sp.dataset.editgroup; const val=sp.textContent.trim();
+  if(!val){ renderShopping(); return; }
+  if(shopGroup==="shop"){ const s=state.shops.find(x=>x.id===gid); if(s){s.label=val; save(); renderToday();} }
+  else { const c=state.categories.find(x=>x.id===gid); if(c){c.label=val; save(); renderToday();} } });
+
+/* ---------- Meals ---------- */
+let mealWeekOffset=0;
+function renderMeals(){
+  const start=addDays(mondayOf(todayISO()),mealWeekOffset*7), end=addDays(start,6);
+  const sd=new Date(start+"T00:00:00"), ed=new Date(end+"T00:00:00");
+  const range=`${sd.toLocaleDateString(undefined,{day:"numeric",month:"short"})} – ${ed.toLocaleDateString(undefined,{day:"numeric",month:"short"})}`;
+  $("#mealWeekTitle").textContent=(mealWeekOffset===0?"This week · ":mealWeekOffset===1?"Next week · ":"")+range;
+  let html=""; for(let i=0;i<7;i++){ const day=addDays(start,i); const m=state.meals[day]||{}; const isToday=day===todayISO(); const dd=new Date(day+"T00:00:00");
+    const slot=(lbl,val)=>`<div class="meal-slot"><div class="ms-lbl">${lbl}</div><div class="ms-val ${val?"":"ms-empty"}">${val?esc(val):"Not planned"}</div></div>`;
+    html+=`<div class="meal-day ${isToday?"today":""}"><div class="meal-dhead"><div><span class="dname">${DAYNAMES[i]}</span> <span class="ddate">${dd.toLocaleDateString(undefined,{day:"numeric",month:"short"})}</span></div><button class="btn ghost sm edit" data-mealedit="${day}">${m.breakfast||m.lunch||m.dinner?"Edit":"+ Add"}</button></div><div class="meal-slots">${slot("Breakfast",m.breakfast)}${slot("Lunch",m.lunch)}${slot("Dinner",m.dinner)}</div></div>`; }
+  $("#mealList").innerHTML=html;
+}
+
+/* ---------- Reminders ---------- */
+let remFilter="active";
+function renderReminders(){
+  const list=state.reminders.filter(r=>remFilter==="active"?!r.done:r.done).sort((a,b)=>{ if(!a.due)return 1; if(!b.due)return -1; return a.due<b.due?-1:1; });
+  const wrap=$("#remList");
+  if(!list.length){ wrap.innerHTML=emptyMsg(remFilter==="active"?"🎉":"📭",remFilter==="active"?"No active reminders":"Nothing done yet"); return; }
+  const t=todayISO();
+  wrap.innerHTML=`<div class="card tight">`+list.map(r=>{ const who=member(r.who); let dueTxt="";
+    if(r.due){ const overdue=r.due<t&&!r.done; dueTxt=`<span style="color:${overdue?"var(--pink)":"var(--text-soft)"}">${overdue?"⚠ ":""}${fmtDay(r.due)}</span>`; }
+    return `<div class="list-item"><div class="check ${r.done?"on":""}" data-remtoggle="${r.id}">${r.done?"✓":""}</div><div class="li-main"><div class="li-title ${r.done?"done":""}">${esc(r.text)}</div>${dueTxt?`<div class="li-sub">${dueTxt}</div>`:""}</div>${who?`<div class="avatar" style="background:${who.color}">${initials(who.name)}</div>`:""}<button class="del" data-remdel="${r.id}" aria-label="Delete">×</button></div>`; }).join("")+`</div>`;
+}
+
+/* ---------- Calendar ---------- */
+let calView="agenda", calWeekOffset=0, calMonthOffset=0, calSelDay=todayISO();
+function occEnd(e){ return (e.endDate&&e.endDate>e.date)?e.endDate:e.date; }
+function occursOn(e,day){ return e.date<=day && day<=occEnd(e); }
+function isMulti(e){ return e.endDate&&e.endDate>e.date; }
+function sortEvents(a,b){ if(a.date!==b.date)return a.date<b.date?-1:1; return (a.time||"99")<(b.time||"99")?-1:1; }
+function eventsOn(day){ return state.events.filter(e=>occursOn(e,day)).sort(sortEvents); }
+function renderCalendar(){ const area=$("#calArea");
+  area.innerHTML = calView==="agenda"?renderAgenda():calView==="week"?renderWeek():renderMonth(); }
+function renderAgenda(){
+  const t=todayISO(); const list=state.events.filter(e=>occEnd(e)>=t).sort(sortEvents);
+  if(!list.length) return emptyMsg("📅","No upcoming events — add one above");
+  const byDay={}; list.forEach(e=>{ const disp=e.date<t?t:e.date; (byDay[disp]=byDay[disp]||[]).push(e); });
+  let html=""; Object.keys(byDay).sort().forEach(day=>{ html+=`<div class="day-head">${fmtDay(day)}</div><div class="card tight">`; byDay[day].sort(sortEvents).forEach(e=>html+=eventRow(e)); html+=`</div>`; });
+  return html;
+}
+function eventRow(e){ const ty=EV_TYPES[e.type]||EV_TYPES.other; const pend=attPending(e).length;
+  const timeLbl=isMulti(e)?(fmtDay(e.date).replace("Today","today")+" → "+fmtDay(occEnd(e))):(e.time?fmtTime(e.time):"All day");
+  return `<div class="event clickable" data-openevent="${e.id}"><div class="ev-time">${isMulti(e)?"Trip":(e.time?fmtTime(e.time):"All day")}</div><div class="ev-bar" style="background:${ty.color}"></div>
+    <div class="ev-main"><div class="ev-title">${esc(e.title)}</div><div class="ev-meta">
+      <span class="type-pill" style="background:${ty.soft};color:${ty.color}">${ty.emoji} ${ty.label}</span>
+      ${isMulti(e)?`<span>${esc(timeLbl)}</span>`:""}${e.location?`<span>📍 ${esc(e.location.split(",")[0])}</span>`:""}
+      ${attAvatars(e)}${pend?`<span class="ev-badge">${pend} to confirm</span>`:""}</div></div>
+    <div class="ev-chevron">›</div></div>`;
+}
+function attAvatars(e){ const ids=(e.attendees&&e.attendees.length)?e.attendees:[]; if(!ids.length)return "";
+  return `<span class="avatar-stack">`+ids.slice(0,3).map(id=>{ const m=member(id); return m?`<span class="avatar" style="width:20px;height:20px;font-size:.62rem;background:${m.color}">${initials(m.name)}</span>`:""; }).join("")+`</span>`; }
+function renderWeek(){
+  const start=addDays(mondayOf(todayISO()),calWeekOffset*7);
+  const sd=new Date(start+"T00:00:00"), ed=new Date(addDays(start,6)+"T00:00:00");
+  const range=`${sd.toLocaleDateString(undefined,{day:"numeric",month:"short"})} – ${ed.toLocaleDateString(undefined,{day:"numeric",month:"short"})}`;
+  // keep selected day within week
+  if(calSelDay<start||calSelDay>addDays(start,6)) calSelDay=(calWeekOffset===0?todayISO():start);
+  let html=`<div class="navbar"><div class="nb-title">${calWeekOffset===0?"This week · "+range:range}</div><div class="nb-arrows"><button data-calnav="wprev">‹</button><button class="today-btn" data-calnav="wtoday">Today</button><button data-calnav="wnext">›</button></div></div>`;
+  html+=`<div class="week-strip">`;
+  for(let i=0;i<7;i++){ const day=addDays(start,i); const evs=eventsOn(day); const isToday=day===todayISO(); const sel=day===calSelDay; const dd=new Date(day+"T00:00:00");
+    let dots=""; const cols=[...new Set(evs.map(e=>(EV_TYPES[e.type]||EV_TYPES.other).color))].slice(0,3);
+    cols.forEach(c=>dots+=`<span class="ws-dot" style="background:${c}"></span>`);
+    html+=`<div class="ws-day ${isToday?"today":""} ${sel?"sel":""}" data-selday="${day}"><div class="ws-wd">${DAYSHORT[i]}</div><div class="ws-num">${dd.getDate()}</div><div class="ws-dots">${dots}</div></div>`; }
+  html+=`</div>`;
+  const selEvs=eventsOn(calSelDay);
+  html+=`<div class="sel-day-events"><div class="day-head">${fmtDayLong(calSelDay)}</div>`;
+  html+= selEvs.length?`<div class="card tight">${selEvs.map(eventRow).join("")}</div>`:emptyMsg("🗓️","Nothing planned this day");
+  html+=`</div>`;
+  return html;
+}
+function renderMonth(){
+  const base=new Date(todayISO()+"T00:00:00"); base.setDate(1); base.setMonth(base.getMonth()+calMonthOffset);
+  const year=base.getFullYear(), month=base.getMonth();
+  const monthName=base.toLocaleDateString(undefined,{month:"long",year:"numeric"});
+  const firstWd=(new Date(year,month,1).getDay()+6)%7, daysIn=new Date(year,month+1,0).getDate();
+  let html=`<div class="navbar"><div class="nb-title">${monthName}</div><div class="nb-arrows"><button data-calnav="mprev">‹</button><button class="today-btn" data-calnav="mtoday">Today</button><button data-calnav="mnext">›</button></div></div><div class="month-grid">`;
+  DAYSHORT.forEach(w=>html+=`<div class="m-wd">${w}</div>`);
+  const t=todayISO();
+  for(let i=0;i<firstWd;i++){ const dn=new Date(year,month,-(firstWd-1-i)).getDate(); html+=`<div class="mcell dim"><span class="mnum">${dn}</span></div>`; }
+  for(let d=1;d<=daysIn;d++){ const iso=isoOf(new Date(year,month,d)); const evs=eventsOn(iso);
+    const cls=[iso===t?"today":"",iso===calSelDay?"sel":""].join(" "); let dots="";
+    [...new Set(evs.map(e=>(EV_TYPES[e.type]||EV_TYPES.other).color))].slice(0,4).forEach(c=>dots+=`<span class="mdot" style="background:${c}"></span>`);
+    html+=`<div class="mcell ${cls}" data-selday="${iso}"><span class="mnum">${d}</span><div class="mdots">${dots}</div></div>`; }
+  html+=`</div>`;
+  const selEvs=eventsOn(calSelDay);
+  html+=`<div class="sel-day-events"><div class="day-head">${fmtDayLong(calSelDay)}</div>`;
+  html+= selEvs.length?`<div class="card tight">${selEvs.map(eventRow).join("")}</div>`:emptyMsg("🗓️","Nothing on this day");
+  html+=`</div>`;
+  return html;
+}
+
+/* ---------- Notes ---------- */
+function renderNotes(){
+  const wrap=$("#noteList");
+  if(!state.notes.length){ wrap.innerHTML=emptyMsg("📝","No notes yet — create one above"); wrap.classList.remove("note-grid"); return; }
+  wrap.classList.add("note-grid");
+  wrap.innerHTML=state.notes.map(n=>{ const total=n.items.length,done=n.items.filter(i=>i.done).length,pct=total?Math.round(done/total*100):0;
+    return `<div class="note-card" data-opennote="${n.id}"><div class="nc-emoji">${n.emoji}</div><div class="nc-title">${esc(n.title)}</div><div class="nc-prog">${total?`${done}/${total} done`:"Empty"}</div>${total?`<div class="nc-bar"><div class="nc-fill" style="width:${pct}%"></div></div>`:""}</div>`; }).join("");
+}
+
+/* ---------- More ---------- */
+function renderMore(){
+  $("#hubRem").textContent=`${state.reminders.filter(r=>!r.done).length} active`;
+  $("#hubNotes").textContent=`${state.notes.length} note${state.notes.length!==1?"s":""}`;
+  $("#setName").value=state.name; $("#setYou").value=state.you||"";
+  $("#memberList").innerHTML=state.members.map(m=>`<span class="member-tag"><span class="avatar" style="background:${m.color}">${initials(m.name)}</span>${esc(m.name)}<button class="del" data-memdel="${m.id}" style="font-size:1rem;padding:0 2px" aria-label="Remove">×</button></span>`).join("");
+  $$("#themeSeg button").forEach(b=>b.classList.toggle("on",b.dataset.t===(state.theme||"auto")));
+  $("#alertToggle").textContent = alertsEnabled?"✓ Browser alerts on":"Enable browser alerts";
+}
+
+/* ---------- theme ---------- */
+function applyTheme(){ const t=state.theme||"auto"; if(t==="auto")document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme",t); }
+
+/* ---------- navigation with back stack ---------- */
+let currentView="today"; const stack=[];
+const NAV_MAP={today:"today",shopping:"shopping",meals:"meals",calendar:"calendar",more:"more",reminders:"more",notes:"more"};
+function showView(v){ $$(".view").forEach(s=>s.classList.remove("active")); $("#view-"+v).classList.add("active");
+  $$("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===NAV_MAP[v])); }
+function go(view,opts){ opts=opts||{}; if(opts.root){ stack.length=0; } else if(view!==currentView){ stack.push(currentView); }
+  currentView=view; showView(view); $("#backBtn").hidden=stack.length===0; window.scrollTo(0,0); }
+function back(){ if(!stack.length)return; currentView=stack.pop(); showView(currentView); $("#backBtn").hidden=stack.length===0; window.scrollTo(0,0); }
+$("#backBtn").onclick=back;
+$$("#nav button").forEach(b=>b.onclick=()=>go(b.dataset.view,{root:true}));
+document.addEventListener("click",e=>{ const g=e.target.closest("[data-go]"); if(g&&!e.target.closest("[data-openevent],[data-opennote],[data-itemedit]")) go(g.dataset.go); });
+
+/* ---------- shopping add / group ---------- */
+function guessCategory(name){ const n=name.toLowerCase();
+  const map={produce:["apple","banana","spinach","lettuce","tomato","onion","carrot","potato","pepper","cucumber","berry","berries","fruit","veg","salad","lemon","lime","garlic","avocado","broccoli","grape"],
+    dairy:["milk","cheese","yogurt","yoghurt","butter","cream","egg","eggs"],bakery:["bread","loaf","bun","bagel","croissant","roll","cake","pastry","baguette"],
+    meat:["chicken","beef","pork","fish","salmon","mince","sausage","bacon","ham","turkey","steak","prawn"],frozen:["frozen","ice cream","peas","fries"],
+    household:["toilet","paper","towel","soap","deterg","dishwasher","cleaner","bin","bags","sponge","shampoo","toothpaste","tissue","wipes","foil","nappy","nappies","diaper","diapers"],
+    pantry:["pasta","rice","noodle","flour","sugar","oil","salt","sauce","beans","can","tin","cereal","coffee","tea","spice","stock","honey","jam","chocolate","biscuit","crisps","snack","water","juice","nuts"]};
+  for(const c in map){ if(map[c].some(w=>n.includes(w))) return state.categories.find(x=>x.id===c)?c:"other"; } return "other"; }
+function addShop(){ const inp=$("#shopInput"),raw=inp.value.trim(); if(!raw)return;
+  let name=raw,qty=""; const m1=raw.match(/^(\d+\s*\w*)\s+(.+)$/),m2=raw.match(/^(.+?)\s*[x×]\s*(\d+)$/i);
+  if(m2){name=m2[1].trim();qty=m2[2];} else if(m1&&/^\d/.test(raw)){qty=m1[1].trim();name=m1[2].trim();}
+  state.shopping.unshift({id:uid(),name,qty,cat:guessCategory(name),shop:"",done:false}); inp.value=""; save(); renderShopping(); renderToday(); }
+$("#shopAddBtn").onclick=addShop;
+$("#shopInput").addEventListener("keydown",e=>{ if(e.key==="Enter")addShop(); });
+$$("#shopGroupToggle .gt-opt").forEach(b=>b.onclick=()=>{ shopGroup=b.dataset.g; renderShopping(); });
+document.addEventListener("click",e=>{ const b=e.target.closest("[data-addgroup]"); if(!b)return;
+  if(b.dataset.addgroup==="shop"){ const id=uid(); state.shops.push({id,label:"New store",color:SHOP_COLORS[state.shops.length%SHOP_COLORS.length],emoji:SHOP_EMOJIS[state.shops.length%SHOP_EMOJIS.length]}); pendingFocusGroup=id; save(); renderShopping(); }
+  else { const id=uid(); state.categories.push({id,label:"New category",emoji:"🛍️"}); pendingFocusGroup=id; save(); renderShopping(); } });
+
+/* ---------- reminders add ---------- */
+function addRem(){ const inp=$("#remInput"),txt=inp.value.trim(); if(!txt)return;
+  state.reminders.unshift({id:uid(),text:txt,due:"",who:"",done:false}); inp.value=""; save(); renderReminders(); renderToday(); renderMore(); }
+$("#remAddBtn").onclick=addRem;
+$("#remInput").addEventListener("keydown",e=>{ if(e.key==="Enter")addRem(); });
+$$("#remFilter button").forEach(b=>b.onclick=()=>{ remFilter=b.dataset.f; $$("#remFilter button").forEach(x=>x.classList.toggle("on",x===b)); renderReminders(); });
+
+/* ---------- calendar seg + nav ---------- */
+$$("#calSeg button").forEach(b=>b.onclick=()=>{ calView=b.dataset.v; $$("#calSeg button").forEach(x=>x.classList.toggle("on",x===b)); renderCalendar(); });
+$("#calArea").addEventListener("click",e=>{
+  const nav=e.target.closest("[data-calnav]");
+  if(nav){ const a=nav.dataset.calnav; if(a==="wprev")calWeekOffset--; else if(a==="wnext")calWeekOffset++; else if(a==="wtoday"){calWeekOffset=0;calSelDay=todayISO();}
+    else if(a==="mprev")calMonthOffset--; else if(a==="mnext")calMonthOffset++; else if(a==="mtoday"){calMonthOffset=0;calSelDay=todayISO();} renderCalendar(); return; }
+  const sel=e.target.closest("[data-selday]"); if(sel){ calSelDay=sel.dataset.selday; renderCalendar(); }
+});
+
+/* ---------- global toggles/deletes/opens ---------- */
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-shoptoggle],[data-shopdel],[data-remtoggle],[data-remdel],[data-memdel],[data-mealedit],[data-opennote],[data-openevent],[data-itemedit],[data-shopremove]");
+  if(!t)return;
+  if(t.dataset.shoptoggle){ const i=state.shopping.find(x=>x.id===t.dataset.shoptoggle); if(i){i.done=!i.done; save(); renderShopping(); renderToday();} }
+  else if(t.dataset.shopdel){ state.shopping=state.shopping.filter(x=>x.id!==t.dataset.shopdel); save(); renderShopping(); renderToday(); }
+  else if(t.dataset.remtoggle){ const r=state.reminders.find(x=>x.id===t.dataset.remtoggle); if(r){r.done=!r.done; save(); renderReminders(); renderToday(); renderMore();} }
+  else if(t.dataset.remdel){ state.reminders=state.reminders.filter(x=>x.id!==t.dataset.remdel); save(); renderReminders(); renderToday(); renderMore(); }
+  else if(t.dataset.memdel){ state.members=state.members.filter(x=>x.id!==t.dataset.memdel); save(); renderMore(); }
+  else if(t.dataset.mealedit){ openMealModal(t.dataset.mealedit); }
+  else if(t.dataset.opennote){ openNote(t.dataset.opennote); }
+  else if(t.dataset.openevent){ openEvDetail(t.dataset.openevent); }
+  else if(t.dataset.itemedit){ openItem(t.dataset.itemedit); }
+  else if(t.dataset.shopremove){ state.shops=state.shops.filter(x=>x.id!==t.dataset.shopremove); save(); renderMore(); renderShopping(); }
+});
+
+/* ---------- settings: name/members/shops/cats/theme ---------- */
+$("#saveName").onclick=()=>{ const v=$("#setName").value.trim(); const y=$("#setYou").value.trim();
+  if(v){ state.name=v; $("#familyName").textContent=v; } if(y){ state.you=y; } save(); renderToday(); pushPresence(); };
+function addMember(){ const inp=$("#memberInput"),v=inp.value.trim(); if(!v)return; state.members.push({id:uid(),name:v,color:MEMBER_COLORS[state.members.length%MEMBER_COLORS.length]}); inp.value=""; save(); renderMore(); }
+$("#memberAddBtn").onclick=addMember; $("#memberInput").addEventListener("keydown",e=>{ if(e.key==="Enter")addMember(); });
+$$("#themeSeg button").forEach(b=>b.onclick=()=>{ state.theme=b.dataset.t; save(); applyTheme(); renderMore(); });
+$("#resetBtn").onclick=()=>{ if(confirm("Reset everything back to the sample data?")){ state=seed(); save(); renderAll(); go("today",{root:true}); } };
+
+/* ---------- event alerts (demo) ---------- */
+let alertsEnabled=false, alertTimers=[];
+$("#alertToggle").onclick=async()=>{
+  if(!("Notification" in window)){ alert("This browser doesn't support notifications."); return; }
+  if(!alertsEnabled){ const p=await Notification.requestPermission(); if(p==="granted"){ alertsEnabled=true; scheduleAlerts(); } else { alert("Notifications were blocked. You can enable them in your browser settings."); } }
+  else { alertsEnabled=false; alertTimers.forEach(clearTimeout); alertTimers=[]; }
+  renderMore();
+};
+function scheduleAlerts(){
+  if(!alertsEnabled||!("Notification" in window)||Notification.permission!=="granted")return;
+  alertTimers.forEach(clearTimeout); alertTimers=[];
+  const now=Date.now(); const t=todayISO();
+  state.events.filter(e=>e.date===t&&e.time&&e.remind&&e.remind!=="none").forEach(e=>{
+    const lead=REMIND_MIN[e.remind]||0; const[h,m]=e.time.split(":"); const evTime=new Date(t+"T00:00:00"); evTime.setHours(+h,+m);
+    const fire=evTime.getTime()-lead*60000; const delay=fire-now;
+    if(delay>0&&delay<24*3600000){ alertTimers.push(setTimeout(()=>{ try{ new Notification("⏰ "+e.title,{body:(e.time?fmtTime(e.time):"")+(e.location?" · "+e.location.split(",")[0]:"")}); }catch(err){} },delay)); }
+  });
+}
+
+/* ---------- event add/edit modal ---------- */
+let evTypeSel="doctor", evAttSel=[], evEditId=null;
+function fillRemindSelect(v){ $("#evRemind").innerHTML=REMIND_OPTS.map(([k,l])=>`<option value="${k}" ${k===v?"selected":""}>${l}</option>`).join(""); }
+function openEvModal(ev){
+  evEditId=ev?ev.id:null;
+  $("#evModalTitle").textContent=ev?"Edit event":"Add event";
+  $("#evTitle").value=ev?ev.title:"";
+  $("#evDate").value=ev?ev.date:((calView!=="agenda")?calSelDay:todayISO());
+  $("#evTime").value=ev?ev.time:"";
+  $("#evEndDate").value=ev?ev.endDate:"";
+  $("#evLoc").value=ev?ev.location:"";
+  evTypeSel=ev?ev.type:"doctor"; evAttSel=ev?[...(ev.attendees||[])]:[];
+  $("#evTypes").innerHTML=Object.keys(EV_TYPES).map(k=>{ const ty=EV_TYPES[k]; return `<button class="chip ${k===evTypeSel?"active":""}" data-evtype="${k}"><span class="dot" style="background:${ty.color}"></span>${ty.emoji} ${ty.label}</button>`; }).join("");
+  renderEvWho(); fillRemindSelect(ev?ev.remind:"none");
+  $("#evModal").classList.add("open");
+}
+function renderEvWho(){ $("#evWho").innerHTML=state.members.map(m=>`<button class="chip ${evAttSel.includes(m.id)?"active":""}" data-evwho="${m.id}"><span class="dot" style="background:${m.color}"></span>${esc(m.name)}</button>`).join(""); }
+$("#evAddBtn").onclick=()=>openEvModal(null);
+$("#evCancel").onclick=()=>$("#evModal").classList.remove("open");
+$("#evModal").addEventListener("click",e=>{ if(e.target.id==="evModal")$("#evModal").classList.remove("open"); });
+$("#evTypes").addEventListener("click",e=>{ const b=e.target.closest("[data-evtype]"); if(!b)return; evTypeSel=b.dataset.evtype; $$("#evTypes .chip").forEach(c=>c.classList.toggle("active",c.dataset.evtype===evTypeSel)); });
+$("#evWho").addEventListener("click",e=>{ const b=e.target.closest("[data-evwho]"); if(!b)return; const id=b.dataset.evwho; if(evAttSel.includes(id))evAttSel=evAttSel.filter(x=>x!==id); else evAttSel.push(id); renderEvWho(); });
+$("#evSave").onclick=()=>{
+  const title=$("#evTitle").value.trim(),date=$("#evDate").value;
+  if(!title){$("#evTitle").focus();return;} if(!date){$("#evDate").focus();return;}
+  let endDate=$("#evEndDate").value; if(endDate&&endDate<date)endDate="";
+  const data={title,date,endDate,time:$("#evTime").value,location:$("#evLoc").value.trim(),type:evTypeSel,attendees:[...evAttSel],remind:$("#evRemind").value};
+  if(evEditId){ const e=state.events.find(x=>x.id===evEditId); if(e){ Object.assign(e,data); e.confirmedBy=(e.confirmedBy||[]).filter(id=>attNeeded(e).includes(id)); } }
+  else { state.events.push({id:uid(),...data,confirmedBy:[],created:Date.now()}); }
+  save(); $("#evModal").classList.remove("open"); if(calView!=="agenda")calSelDay=date; renderCalendar(); renderToday();
+};
+
+/* ---------- event detail modal ---------- */
+let detailId=null;
+function openEvDetail(id){ detailId=id; const e=state.events.find(x=>x.id===id); if(!e)return; renderEvDetail(e); $("#evDetail").classList.add("open");
+  if(e.location) ensureGeocode(e); }
+function renderEvDetail(e){
+  const ty=EV_TYPES[e.type]||EV_TYPES.other;
+  const dateLbl=isMulti(e)?`${fmtDayLong(e.date)} → ${fmtDayLong(occEnd(e))}`:fmtDayLong(e.date);
+  const timeLbl=e.time?fmtTime(e.time):(isMulti(e)?"Multi-day":"All day");
+  const needed=attNeeded(e), pend=attPending(e);
+  const remLbl=(REMIND_OPTS.find(o=>o[0]===e.remind)||["none","No alert"])[1];
+  let attHtml=needed.map(id=>{ const m=member(id); if(!m)return""; const ok=(e.confirmedBy||[]).includes(id);
+    return `<button class="chip confirm-chip ${ok?"active":""}" data-confirm="${id}"><span class="avatar" style="width:18px;height:18px;font-size:.6rem;background:${m.color}">${initials(m.name)}</span>${esc(m.name)} ${ok?"✓":""}</button>`; }).join("");
+  const statusHtml = pend.length
+    ? `<div class="status-line" style="color:var(--pink)">⏳ Awaiting: ${pend.map(id=>member(id)?member(id).name:"").filter(Boolean).join(", ")}</div>`
+    : `<div class="status-line" style="color:var(--green)">✓ Everyone confirmed</div>`;
+  let mapHtml=""; if(e.location){
+    if(e._lat){ const bb=`${(e._lon-0.008).toFixed(5)},${(e._lat-0.005).toFixed(5)},${(e._lon+0.008).toFixed(5)},${(e._lat+0.005).toFixed(5)}`;
+      mapHtml=`<iframe class="map-frame" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=${bb}&layer=mapnik&marker=${e._lat},${e._lon}"></iframe>`; }
+    else if(e._geoFail){ mapHtml=`<div class="map-fallback">Couldn't load a map preview here (the in-app preview blocks it, or the place wasn't found). The link below opens it in Maps.</div>`; }
+    else { mapHtml=`<div class="map-fallback" id="mapLoading">Loading map…</div>`; }
+    mapHtml+=`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.location)}" target="_blank" rel="noopener" class="btn ghost sm block" style="margin-top:8px;text-align:center;text-decoration:none;">Open in Maps ↗</a>`;
+  }
+  $("#evDetailBody").innerHTML=`
+    <div class="det-head"><div class="det-emoji" style="background:${ty.soft}">${ty.emoji}</div>
+      <div style="flex:1;min-width:0"><div class="det-title">${esc(e.title)}</div><span class="type-pill" style="background:${ty.soft};color:${ty.color}">${ty.label}</span></div></div>
+    <div class="det-row"><div class="di">📅</div><div class="dv">${dateLbl}<div class="dv-sub">${timeLbl}</div></div></div>
+    ${e.location?`<div class="det-row"><div class="di">📍</div><div class="dv">${esc(e.location)}${mapHtml}</div></div>`:""}
+    <div class="det-row"><div class="di">👪</div><div class="dv">${e.attendees&&e.attendees.length?"Tap a name to confirm they're aware:":"For everyone — tap to confirm:"}<div class="chip-row">${attHtml}</div>${statusHtml}</div></div>
+    <div class="det-row"><div class="di">⏰</div><div class="dv">Alert: ${remLbl}<div class="dv-sub">Phone notifications arrive with the live version.</div></div></div>
+    <div class="modal-actions" style="margin-top:16px;"><button class="btn ghost" id="evDelBtn" style="flex:1;color:var(--pink)">Delete</button><button class="btn ghost" id="evEditBtn" style="flex:1;">Edit</button><button class="btn" id="evDetClose" style="flex:1;">Done</button></div>`;
+  $("#evDelBtn").onclick=()=>{ if(confirm(`Delete "${e.title}"? This can't be undone.`)){ state.events=state.events.filter(x=>x.id!==e.id); save(); $("#evDetail").classList.remove("open"); renderCalendar(); renderToday(); } };
+  $("#evEditBtn").onclick=()=>{ $("#evDetail").classList.remove("open"); openEvModal(e); };
+  $("#evDetClose").onclick=()=>$("#evDetail").classList.remove("open");
+  $("#evDetailBody").querySelectorAll("[data-confirm]").forEach(b=>b.onclick=()=>{ const id=b.dataset.confirm; e.confirmedBy=e.confirmedBy||[]; if(e.confirmedBy.includes(id))e.confirmedBy=e.confirmedBy.filter(x=>x!==id); else e.confirmedBy.push(id); save(); renderEvDetail(e); renderCalendar(); renderToday(); });
+}
+$("#evDetail").addEventListener("click",e=>{ if(e.target.id==="evDetail")$("#evDetail").classList.remove("open"); });
+function ensureGeocode(e){
+  if(e._lat||e._geoFail)return;
+  fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&q="+encodeURIComponent(e.location))
+    .then(r=>r.json()).then(j=>{ if(j&&j[0]){ e._lat=parseFloat(j[0].lat); e._lon=parseFloat(j[0].lon); } else { e._geoFail=true; }
+      if(detailId===e.id) renderEvDetail(e); })
+    .catch(()=>{ e._geoFail=true; if(detailId===e.id) renderEvDetail(e); });
+}
+
+/* ---------- meal modal ---------- */
+let mealEditDay=null;
+function openMealModal(day){ mealEditDay=day; const m=state.meals[day]||{}; const dd=new Date(day+"T00:00:00");
+  $("#mealModalTitle").textContent=dd.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"});
+  $("#mealB").value=m.breakfast||""; $("#mealL").value=m.lunch||""; $("#mealD").value=m.dinner||""; $("#mealModal").classList.add("open"); }
+$("#mealCancel").onclick=()=>$("#mealModal").classList.remove("open");
+$("#mealModal").addEventListener("click",e=>{ if(e.target.id==="mealModal")$("#mealModal").classList.remove("open"); });
+$("#mealSave").onclick=()=>{ const b=$("#mealB").value.trim(),l=$("#mealL").value.trim(),d=$("#mealD").value.trim();
+  if(b||l||d)state.meals[mealEditDay]={breakfast:b,lunch:l,dinner:d}; else delete state.meals[mealEditDay];
+  save(); $("#mealModal").classList.remove("open"); renderMeals(); renderToday(); };
+$("#mealPrev").onclick=()=>{ mealWeekOffset--; renderMeals(); };
+$("#mealNext").onclick=()=>{ mealWeekOffset++; renderMeals(); };
+$("#mealToday").onclick=()=>{ mealWeekOffset=0; renderMeals(); };
+
+/* ---------- item edit modal ---------- */
+let itemEditId=null;
+function openItem(id){ const i=state.shopping.find(x=>x.id===id); if(!i)return; itemEditId=id;
+  $("#itName").value=i.name; $("#itQty").value=i.qty||"";
+  $("#itCat").innerHTML=state.categories.map(c=>`<option value="${c.id}" ${c.id===i.cat?"selected":""}>${c.emoji} ${esc(c.label)}</option>`).join("");
+  $("#itShop").innerHTML=`<option value="">No store set</option>`+state.shops.map(s=>`<option value="${s.id}" ${s.id===i.shop?"selected":""}>${esc(s.label)}</option>`).join("");
+  $("#itemModal").classList.add("open"); }
+$("#itemModal").addEventListener("click",e=>{ if(e.target.id==="itemModal")$("#itemModal").classList.remove("open"); });
+$("#itSave").onclick=()=>{ const i=state.shopping.find(x=>x.id===itemEditId); if(i){ const nm=$("#itName").value.trim(); if(nm)i.name=nm; i.qty=$("#itQty").value.trim(); i.cat=$("#itCat").value; i.shop=$("#itShop").value; save(); renderShopping(); renderToday(); } $("#itemModal").classList.remove("open"); };
+$("#itDelete").onclick=()=>{ state.shopping=state.shopping.filter(x=>x.id!==itemEditId); save(); renderShopping(); renderToday(); $("#itemModal").classList.remove("open"); };
+
+/* ---------- new note modal ---------- */
+let nnEmojiSel="📝";
+$("#noteAddBtn").onclick=()=>{ $("#nnTitle").value=""; nnEmojiSel="📝";
+  $("#nnEmoji").innerHTML=NOTE_EMOJIS.map(em=>`<button class="chip ${em===nnEmojiSel?"active":""}" data-nnemoji="${em}" style="font-size:1.1rem">${em}</button>`).join("");
+  $("#newNoteModal").classList.add("open"); };
+$("#nnCancel").onclick=()=>$("#newNoteModal").classList.remove("open");
+$("#newNoteModal").addEventListener("click",e=>{ if(e.target.id==="newNoteModal")$("#newNoteModal").classList.remove("open"); });
+$("#nnEmoji").addEventListener("click",e=>{ const b=e.target.closest("[data-nnemoji]"); if(!b)return; nnEmojiSel=b.dataset.nnemoji; $$("#nnEmoji .chip").forEach(c=>c.classList.toggle("active",c.dataset.nnemoji===nnEmojiSel)); });
+$("#nnSave").onclick=()=>{ const title=$("#nnTitle").value.trim(); if(!title){$("#nnTitle").focus();return;} const id=uid();
+  state.notes.unshift({id,emoji:nnEmojiSel,title,items:[]}); save(); $("#newNoteModal").classList.remove("open"); renderNotes(); renderToday(); renderMore(); openNote(id); };
+
+/* ---------- note detail modal ---------- */
+let curNote=null;
+function openNote(id){ curNote=state.notes.find(n=>n.id===id); if(!curNote)return; $("#ndEmoji").textContent=curNote.emoji; $("#ndTitle").value=curNote.title; renderNoteItems(); $("#noteModal").classList.add("open"); }
+function renderNoteItems(){ if(!curNote.items.length){ $("#ndItems").innerHTML=`<div class="empty" style="padding:16px">Add your first item below</div>`; return; }
+  $("#ndItems").innerHTML=`<div class="card tight" style="margin:0;box-shadow:none">`+curNote.items.map(it=>`<div class="list-item"><div class="check ${it.done?"on":""}" data-nitoggle="${it.id}">${it.done?"✓":""}</div><div class="li-main"><div class="li-title ${it.done?"done":""}">${esc(it.text)}</div></div><button class="del" data-nidel="${it.id}" aria-label="Delete">×</button></div>`).join("")+`</div>`; }
+function addNoteItem(){ const inp=$("#ndInput"),v=inp.value.trim(); if(!v||!curNote)return; curNote.items.push({id:uid(),text:v,done:false}); inp.value=""; save(); renderNoteItems(); }
+$("#ndAdd").onclick=addNoteItem; $("#ndInput").addEventListener("keydown",e=>{ if(e.key==="Enter")addNoteItem(); });
+$("#ndItems").addEventListener("click",e=>{ const tg=e.target.closest("[data-nitoggle]"),dl=e.target.closest("[data-nidel]");
+  if(tg){ const it=curNote.items.find(x=>x.id===tg.dataset.nitoggle); if(it){it.done=!it.done; save(); renderNoteItems();} }
+  else if(dl){ curNote.items=curNote.items.filter(x=>x.id!==dl.dataset.nidel); save(); renderNoteItems(); } });
+$("#ndTitle").addEventListener("input",()=>{ if(curNote){ curNote.title=$("#ndTitle").value; save(); } });
+function closeNote(){ $("#noteModal").classList.remove("open"); renderNotes(); renderToday(); renderMore(); }
+$("#ndClose").onclick=closeNote;
+$("#noteModal").addEventListener("click",e=>{ if(e.target.id==="noteModal")closeNote(); });
+$("#ndDelete").onclick=()=>{ if(curNote&&confirm("Delete this note?")){ state.notes=state.notes.filter(n=>n.id!==curNote.id); save(); closeNote(); } };
+
+/* ---------- boot ---------- */
+document.addEventListener("focusout",()=>{ setTimeout(()=>{ if(pendingRender&&!editingLocks()){ pendingRender=false; renderAll(); } },80); });
+setInterval(()=>{ if(pendingRender&&!editingLocks()){ pendingRender=false; renderAll(); } },1500);
+initAuthUI(); boot();
+</script>
+<script>if("serviceWorker" in navigator){ window.addEventListener("load",function(){ navigator.serviceWorker.register("service-worker.js").catch(function(){}); }); }</script>
+</body>
+</html>
