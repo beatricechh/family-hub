@@ -4,39 +4,39 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#d9772e">
+<meta name="theme-color" content="#7c6cf0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Cuibul 🪹</title>
 <style>
   :root {
-    --bg: #f4f1ec; --surface: #ffffff; --surface-2: #faf8f4; --border: #e7e1d7;
-    --text: #2b2723; --text-soft: #6f665b; --text-faint: #a89e90;
-    --accent: #d9772e; --accent-soft: #fbe9d8; --accent-text: #b45a17;
-    --green: #4f9d69; --green-soft: #e3f1e6; --blue: #4a7fb5; --blue-soft: #e2ecf6;
-    --purple: #8367b0; --purple-soft: #ece4f5; --pink: #c65f86; --pink-soft: #f8e3ec;
-    --amber: #c7972f; --amber-soft: #f6ecd3;
-    --shadow: 0 1px 2px rgba(60,50,40,.06), 0 6px 20px rgba(60,50,40,.06);
-    --radius: 16px; --radius-sm: 11px; --nav-h: 66px;
+    --bg:#f2f4f6; --surface:#ffffff; --surface-2:#eef1f4; --border:#e4e8ec;
+    --text:#1b1e23; --text-soft:#5c626d; --text-faint:#98a0ac;
+    --accent:#7c6cf0; --accent-soft:#f0edfd; --accent-text:#5b4bd6;
+    --green:#2fb46b; --green-soft:#dcf4e6; --blue:#3b82f6; --blue-soft:#e3ecfe;
+    --purple:#7c6cf0; --purple-soft:#e9e6fd; --pink:#ec4f8c; --pink-soft:#fde0ec;
+    --amber:#e0a72e; --amber-soft:#f8edd2;
+    --shadow:0 1px 2px rgba(20,30,40,.05), 0 8px 24px rgba(20,30,40,.07);
+    --radius:16px; --radius-sm:11px; --nav-h:66px;
   }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-    --bg:#1a1815; --surface:#24211d; --surface-2:#2b2823; --border:#38332c;
-    --text:#f0ebe3; --text-soft:#b7ac9c; --text-faint:#7d7264;
-    --accent:#e8894a; --accent-soft:#3a2a1c; --accent-text:#f0a163;
-    --green:#6cba86; --green-soft:#223026; --blue:#6fa0d0; --blue-soft:#1e2a37;
-    --purple:#a186c9; --purple-soft:#2a2336; --pink:#d97ea1; --pink-soft:#35222b;
-    --amber:#d9b458; --amber-soft:#322a17;
-    --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.35);
+    --bg:#0f1216; --surface:#181c22; --surface-2:#20252d; --border:#2f3540;
+    --text:#eef1f5; --text-soft:#a6adba; --text-faint:#727a87;
+    --accent:#a595f7; --accent-soft:#2a2350; --accent-text:#bcb0fb;
+    --green:#45c97e; --green-soft:#173021; --blue:#5b9bff; --blue-soft:#182740;
+    --purple:#9b8cff; --purple-soft:#231f3a; --pink:#ff6fa3; --pink-soft:#341f2a;
+    --amber:#eec25a; --amber-soft:#332913;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.4);
   } }
   :root[data-theme="dark"] {
-    --bg:#1a1815; --surface:#24211d; --surface-2:#2b2823; --border:#38332c;
-    --text:#f0ebe3; --text-soft:#b7ac9c; --text-faint:#7d7264;
-    --accent:#e8894a; --accent-soft:#3a2a1c; --accent-text:#f0a163;
-    --green:#6cba86; --green-soft:#223026; --blue:#6fa0d0; --blue-soft:#1e2a37;
-    --purple:#a186c9; --purple-soft:#2a2336; --pink:#d97ea1; --pink-soft:#35222b;
-    --amber:#d9b458; --amber-soft:#322a17;
-    --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.35);
+    --bg:#0f1216; --surface:#181c22; --surface-2:#20252d; --border:#2f3540;
+    --text:#eef1f5; --text-soft:#a6adba; --text-faint:#727a87;
+    --accent:#a595f7; --accent-soft:#2a2350; --accent-text:#bcb0fb;
+    --green:#45c97e; --green-soft:#173021; --blue:#5b9bff; --blue-soft:#182740;
+    --purple:#9b8cff; --purple-soft:#231f3a; --pink:#ff6fa3; --pink-soft:#341f2a;
+    --amber:#eec25a; --amber-soft:#332913;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.4);
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   [hidden] { display: none !important; }
@@ -84,8 +84,8 @@
   @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.35;} }
 
   /* Today hero (today's events) */
-  .hero { border-radius:var(--radius); padding:18px 18px 14px; margin:16px 0 4px; color:#fff; background:linear-gradient(135deg,#d9772e,#c2571a); box-shadow:0 8px 24px rgba(180,90,23,.28); }
-  :root[data-theme="dark"] .hero, :root:not([data-theme="light"]) .hero { background:linear-gradient(135deg,#c96a29,#a2481a); }
+  .hero { border-radius:var(--radius); padding:18px 18px 14px; margin:16px 0 4px; color:#fff; background:linear-gradient(135deg,#8f80f7,#6a58e0); box-shadow:0 8px 24px rgba(106,88,224,.30); }
+  :root[data-theme="dark"] .hero, :root:not([data-theme="light"]) .hero { background:linear-gradient(135deg,#7061d8,#5544bd); }
   .hero .h-lbl { font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; opacity:.85; }
   .hero .h-ev { display:flex; align-items:center; gap:11px; padding:9px 0; border-top:1px solid rgba(255,255,255,.18); margin-top:8px; }
   .hero .h-ev:first-of-type { border-top:none; margin-top:6px; }
@@ -117,8 +117,18 @@
   .clickable { cursor:pointer; }
 
   .shop-preview { display:flex; flex-wrap:wrap; gap:8px; }
-  .shop-chip { display:inline-flex; align-items:center; gap:7px; background:var(--surface-2); border:1px solid var(--border); border-radius:20px; padding:7px 13px; font-size:.9rem; }
-  .shop-chip .sc-qty { color:var(--accent-text); font-weight:600; font-size:.8rem; }
+  .shop-chip { display:inline-flex; align-items:center; gap:7px; background:var(--accent-soft); border:1px solid transparent; color:var(--text); border-radius:14px; padding:9px 14px; font-size:.94rem; font-weight:550; }
+  .shop-chip .sc-qty { background:var(--surface); color:var(--accent-text); font-weight:700; font-size:.72rem; padding:1px 8px; border-radius:10px; }
+  .inbox-card { background:var(--accent-soft); border:1px solid transparent; border-radius:var(--radius); box-shadow:var(--shadow); padding:12px 15px; margin:14px 0 4px; }
+  .inbox-head { font-size:.76rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:var(--accent-text); margin-bottom:2px; }
+  .inbox-row { display:flex; align-items:center; gap:11px; padding:10px 0; border-top:1px solid rgba(120,120,120,.18); }
+  .inbox-row:first-of-type { border-top:none; }
+  .inbox-card .oi-icon { width:34px; height:34px; border-radius:10px; flex:none; display:grid; place-items:center; font-size:1rem; }
+  .inbox-card .oi-main { flex:1; min-width:0; }
+  .inbox-card .oi-title { font-weight:600; font-size:.95rem; }
+  .inbox-card .oi-sub { font-size:.8rem; color:var(--text-soft); }
+  .accept-btn { flex:none; }
+  .inbox-hint { margin:14px 0 4px; }
 
   .empty { text-align:center; color:var(--text-faint); padding:26px 12px; font-size:.92rem; }
   .empty .e-emoji { font-size:1.8rem; display:block; margin-bottom:6px; }
@@ -188,10 +198,11 @@
   .ev-chevron { color:var(--text-faint); align-self:center; font-size:1.1rem; flex:none; }
 
   .navbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; gap:10px; }
-  .navbar .nb-title { font-weight:650; font-size:1rem; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .navbar .nb-arrows { display:flex; gap:6px; flex:none; }
-  .navbar .nb-arrows button, .today-btn { border:1px solid var(--border); background:var(--surface); color:var(--text-soft); border-radius:10px; width:38px; height:38px; font-size:1rem; cursor:pointer; }
-  .today-btn { width:auto; padding:0 12px; font:inherit; font-weight:600; font-size:.82rem; white-space:nowrap; }
+  .navbar { flex-wrap:wrap; }
+  .navbar .nb-title { font-weight:700; font-size:1.02rem; flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .navbar .nb-arrows { display:flex; gap:6px; flex:none; align-items:center; }
+  .navbar .nb-arrows button { border:1px solid var(--border); background:var(--surface); color:var(--text); border-radius:10px; width:38px; height:38px; font-size:1.15rem; line-height:1; cursor:pointer; }
+  .navbar .nb-arrows button.today-btn, .today-btn { border:1px solid var(--accent); background:var(--accent-soft); color:var(--accent-text); border-radius:10px; height:38px; width:auto; min-width:66px; padding:0 16px; font:inherit; font-weight:700; font-size:.86rem; white-space:nowrap; cursor:pointer; }
 
   /* week day strip */
   .week-strip { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-bottom:6px; }
@@ -345,16 +356,11 @@
     <div class="presence" id="presence" hidden></div>
     <div class="weather" id="weather"></div>
 
+    <div id="todayInbox"></div>
+
     <div class="hero" id="todayHero"></div>
 
-    <div class="tiles">
-      <div class="tile shop" data-go="shopping"><div class="emoji">🛒</div><div><div class="big" id="tileShop">0</div><div class="lbl">to buy</div></div></div>
-      <div class="tile rem" data-go="reminders"><div class="emoji">✅</div><div><div class="big" id="tileRem">0</div><div class="lbl">reminders</div></div></div>
-      <div class="tile cal" data-go="calendar"><div class="emoji">📅</div><div><div class="big" id="tileCal">0</div><div class="lbl">upcoming</div></div></div>
-      <div class="tile meal" data-go="meals"><div class="emoji">🍽️</div><div><div class="big" id="tileMeal" style="font-size:1rem;font-weight:650;line-height:1.2;">Tonight</div><div class="lbl" id="tileMealLbl">tonight's dinner</div></div></div>
-    </div>
-
-    <h2 class="section">To buy <span class="link" data-go="shopping">Full list →</span></h2>
+    <h2 class="section">🛒 To buy <span class="link" data-go="shopping">Full list →</span></h2>
     <div class="card" id="overviewShop"></div>
 
     <h2 class="section">Coming up <span class="link" data-go="calendar">Calendar →</span></h2>
@@ -363,22 +369,21 @@
     <h2 class="section">Today's reminders <span class="link" data-go="reminders">All →</span></h2>
     <div class="card" id="overviewReminders"></div>
 
-    <h2 class="section">This week's dinners <span class="link" data-go="meals">Plan →</span></h2>
-    <div class="card" id="overviewMeals"></div>
-
     <h2 class="section">Notes <span class="link" data-go="notes">All →</span></h2>
     <div class="card" id="overviewNotes"></div>
+
+    <h2 class="section">This week's dinners <span class="link" data-go="meals">Plan →</span></h2>
+    <div class="card" id="overviewMeals"></div>
   </section>
 
   <!-- ===== SHOPPING ===== -->
   <section class="view" id="view-shopping">
     <h2 class="section">Shopping list</h2>
-    <div class="sync-note" id="shopSync"><span>🔗</span><div><b>Shared list.</b> Changes save on this device.</div></div>
     <div class="addrow"><input type="text" id="shopInput" placeholder="Add an item… e.g. Milk" autocomplete="off"><button class="btn" id="shopAddBtn">Add</button></div>
     <div class="group-toggle" id="shopGroupToggle"><span class="gt-lbl">Group by</span><button class="gt-opt on" data-g="shop">Shop</button><button class="gt-opt" data-g="category">Category</button></div>
     <div id="shopList"></div>
     <div id="shopChecked"></div>
-    <div style="margin-top:8px;color:var(--text-faint);font-size:.8rem;text-align:center;">Tip: drag <b>⠿</b> to reorder · tap a heading to rename · tap an item to edit.</div>
+    <div style="margin-top:8px;color:var(--text-faint);font-size:.8rem;text-align:center;">Tip: drag <b>⠿</b> to reorder or move items between shops · tap a heading to rename · tap an item to edit.</div>
   </section>
 
   <!-- ===== MEALS ===== -->
@@ -402,6 +407,7 @@
   <!-- ===== CALENDAR ===== -->
   <section class="view" id="view-calendar">
     <h2 class="section">Family calendar</h2>
+    <div id="calInbox"></div>
     <div class="sync-note" id="calSync"><span>📆</span><div><b>Family calendar.</b> Add events, attendees and confirmations here.</div></div>
     <div class="seg" id="calSeg" style="margin-bottom:14px;"><button class="on" data-v="agenda">Agenda</button><button data-v="week">Week</button><button data-v="month">Month</button></div>
     <button class="btn block" id="evAddBtn" style="margin-bottom:16px;">+ Add event</button>
@@ -425,7 +431,7 @@
 
     <h2 class="section">Family &amp; settings</h2>
     <div class="card">
-      <div class="field"><label>Your name (for the greeting)</label><input type="text" id="setYou" placeholder="e.g. Beatrice"></div>
+      <div class="field"><label>You are (on this device)</label><select id="setYou"></select></div>
       <div class="field"><label>Family / dashboard name</label><input type="text" id="setName" placeholder="e.g. The Chiritoi Family"></div>
       <button class="btn sm" id="saveName">Save</button>
     </div>
@@ -512,6 +518,17 @@
   </div>
 </div>
 
+<!-- ===== Reminder edit modal ===== -->
+<div class="modal-back" id="remModal">
+  <div class="modal">
+    <h3>Reminder</h3>
+    <div class="field"><label>Reminder</label><input type="text" id="rmText"></div>
+    <div class="field"><label>Due date (optional)</label><input type="date" id="rmDue"></div>
+    <div class="field"><label>Assign to</label><div class="chip-row" id="rmWho"></div></div>
+    <div class="modal-actions"><button class="btn ghost" id="rmDelete" style="flex:1;color:var(--pink)">Delete</button><button class="btn" id="rmSave" style="flex:2;">Save</button></div>
+  </div>
+</div>
+
 <!-- ===== New note modal ===== -->
 <div class="modal-back" id="newNoteModal">
   <div class="modal">
@@ -552,7 +569,7 @@ const EV_TYPES={
 };
 const REMIND_OPTS=[["none","No alert"],["start","At start time"],["10m","10 minutes before"],["30m","30 minutes before"],["1h","1 hour before"],["1d","1 day before"]];
 const REMIND_MIN={none:null,start:0,"10m":10,"30m":30,"1h":60,"1d":1440};
-const MEMBER_COLORS=["#d9772e","#4a7fb5","#4f9d69","#8367b0","#c65f86","#c7972f"];
+const MEMBER_COLORS=["#7c6cf0","#3b82f6","#2fb46b","#0d9488","#ec4f8c","#e0a72e"];
 const BIRDS=["🐦","🦉","🐤","🐥","🐧","🦆","🕊️","🦜"];
 const SHOP_COLORS=["#c0392b","#1f4e9c","#d4a017","#2e8b57","#7d3c98","#0e7c7b"];
 const SHOP_EMOJIS=["🏮","🧴","🛒","🥬","🏬","🛍️","🧺","💊"];
@@ -583,7 +600,7 @@ function seed(){
   const mA=uid(),mB=uid(),mC=uid();
   const sAsian=uid(),sDM=uid(),sNetto=uid();
   return {
-    name:"Cuibul", you:"Beatrice", theme:"auto",
+    name:"Cuibul", you:"Beatrice", youId:"", theme:"auto",
     members:[{id:mA,name:"Mum",color:MEMBER_COLORS[0],bird:"🐦"},{id:mB,name:"Dad",color:MEMBER_COLORS[1],bird:"🦉"},{id:mC,name:"Mia",color:MEMBER_COLORS[3],bird:"🐤"}],
     categories:DEFAULT_CATS.map(c=>({...c})),
     shops:[{id:sAsian,label:"Asian store",color:"#c0392b",emoji:"🏮"},{id:sDM,label:"DM",color:"#1f4e9c",emoji:"🧴"},{id:sNetto,label:"Netto",color:"#d4a017",emoji:"🛒"}],
@@ -596,11 +613,11 @@ function seed(){
       {id:uid(),name:"Eggs",qty:"12",cat:"dairy",shop:"",done:true},
     ],
     reminders:[
-      {id:uid(),text:"Pay the electricity bill",due:t,who:mB,done:false},
-      {id:uid(),text:"Call grandma",due:t,who:mA,done:false},
-      {id:uid(),text:"Sign Mia's permission slip",due:d(2),who:mA,done:false},
-      {id:uid(),text:"Book car service",due:d(5),who:mB,done:false},
-      {id:uid(),text:"Water the plants",due:"",who:mC,done:true},
+      {id:uid(),text:"Pay the electricity bill",due:t,who:mB,done:false,ack:true},
+      {id:uid(),text:"Call grandma",due:t,who:mA,done:false,ack:false},
+      {id:uid(),text:"Sign Mia's permission slip",due:d(2),who:mA,done:false,ack:false},
+      {id:uid(),text:"Book car service",due:d(5),who:mB,done:false,ack:true},
+      {id:uid(),text:"Water the plants",due:"",who:mC,done:true,ack:true},
     ],
     events:[
       {id:uid(),title:"Mia – Swim class",date:d(0),endDate:"",time:"16:00",type:"school",attendees:[mC],location:"Stadtbad Mitte, Berlin",remind:"30m",confirmedBy:[mC],created:Date.now()},
@@ -629,7 +646,8 @@ let state;
 function migrate(s){
   s.meals=s.meals||{}; s.notes=s.notes||[]; s.members=s.members||[]; s.shopping=s.shopping||[];
   s.reminders=s.reminders||[]; s.events=s.events||[]; s.theme=s.theme||"auto"; s.name=s.name||"Cuibul";
-  s.you=s.you||"Beatrice";
+  s.you=s.you||"Beatrice"; s.youId=s.youId||"";
+  s.reminders.forEach(r=>{ if(r.ack===undefined)r.ack=false; });
   if(!s.categories||!s.categories.length) s.categories=DEFAULT_CATS.map(c=>({...c}));
   if(!s.shops) s.shops=[{id:uid(),label:"Asian store"},{id:uid(),label:"DM"},{id:uid(),label:"Netto"}];
   s.shops.forEach((sh,i)=>{ if(!sh.color)sh.color=SHOP_COLORS[i%SHOP_COLORS.length]; if(!sh.emoji)sh.emoji=SHOP_EMOJIS[i%SHOP_EMOJIS.length]; });
@@ -699,8 +717,8 @@ function initPresence(){ if(!sb||!hid)return;
   presenceCh.on("presence",{event:"sync"},()=>{ const st=presenceCh.presenceState(); const peers=[];
     Object.keys(st).forEach(k=>{ const meta=(st[k]&&st[k][0])||{}; peers.push({name:meta.name||"Someone",color:meta.color||"#8a8a8a",you:k===myPresKey}); });
     renderPresence(peers); })
-  .subscribe(async status=>{ if(status==="SUBSCRIBED"){ try{ await presenceCh.track({name:state.you||"Someone",color:"#d9772e"}); }catch(e){} } }); }
-function pushPresence(){ if(presenceCh){ try{ presenceCh.track({name:state.you||"Someone",color:"#d9772e"}); }catch(e){} } }
+  .subscribe(async status=>{ if(status==="SUBSCRIBED"){ try{ await presenceCh.track({name:myName(),color:"#7c6cf0"}); }catch(e){} } }); }
+function pushPresence(){ if(presenceCh){ try{ presenceCh.track({name:myName(),color:"#7c6cf0"}); }catch(e){} } }
 function renderPresence(peers){ const el=$("#presence"); if(!el)return; const list=peers||[];
   if(list.length<=1){ el.hidden=true; return; } el.hidden=false;
   el.innerHTML='<span class="pr-lbl"><span class="live-dot"></span>Viewing now</span>'+list.slice(0,8).map(p=>
@@ -824,13 +842,22 @@ function renderAll(){ $("#familyName").textContent=state.name; applyTheme();
 const greetWord=GREETINGS[Math.floor(Math.random()*GREETINGS.length)];
 function renderHeader(){ const now=new Date();
   $("#todayDate").textContent=now.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"});
-  $("#greetHi").textContent=`${greetWord}, ${state.you||"there"} 👋`; }
+  $("#greetHi").textContent=`${greetWord}, ${myName()} 👋`; }
+function myId(){ return state.youId||""; }
+function myName(){ const m=member(state.youId); return (m&&m.name)||state.you||"there"; }
 
 /* ---------- Weather (Berlin via Open-Meteo) ---------- */
 function wIcon(code){ if(code===0)return "☀️"; if(code<=2)return "🌤️"; if(code===3)return "☁️"; if(code<=48)return "🌫️";
   if(code<=57)return "🌦️"; if(code<=67)return "🌧️"; if(code<=77)return "🌨️"; if(code<=82)return "🌧️"; if(code<=86)return "🌨️"; return "⛈️"; }
-function jacket(maxT,rain){ let j; if(maxT>=20)j="No jacket needed 👕"; else if(maxT>=14)j="A thin jacket 🧥"; else j="A light jacket 🧥";
-  if(rain>=50)j+=" · umbrella ☔"; return j; }
+function jacket(maxT,rain){ let j;
+  if(maxT>=26)j="T-shirt weather ☀️";
+  else if(maxT>=22)j="No jacket needed 👕";
+  else if(maxT>=18)j="A light jacket 🧥";
+  else if(maxT>=13)j="A jacket 🧥";
+  else if(maxT>=7)j="A warm coat 🧥";
+  else if(maxT>=1)j="A heavy coat 🧣";
+  else j="Bundle up — it\u2019s freezing 🧣";
+  if(rain>=50)j+=" · take an umbrella ☔"; else if(rain>=25)j+=" · maybe an umbrella ☔"; return j; }
 function renderWeather(){
   const el=$("#weather"); if(!el)return;
   el.innerHTML=`<div class="weather-card"><div class="wc-loading">Loading Berlin weather…</div></div>`;
@@ -855,11 +882,7 @@ function renderToday(){
   const upcoming=state.events.filter(e=>occEnd(e)>=t).sort(sortEvents);
   const dueToday=remActive.filter(r=>r.due===t).length;
 
-  $("#tileShop").textContent=shopActive.length;
-  $("#tileRem").textContent=remActive.length;
-  $("#tileCal").textContent=upcoming.length;
-  const dTonight=state.meals[t]&&state.meals[t].dinner;
-  $("#tileMeal").textContent=dTonight||"Not set yet"; $("#tileMealLbl").textContent="tonight's dinner";
+  renderInbox("todayInbox");
 
   // HERO: today's events
   const todayEvs=state.events.filter(e=>occursOn(e,t)).sort(sortEvents);
@@ -896,6 +919,21 @@ function renderToday(){
 }
 function attLabel(e){ const ids=e.attendees||[]; if(!ids.length)return " · Everyone";
   const names=ids.map(id=>member(id)).filter(Boolean).map(m=>m.name); return names.length?" · "+names.join(", "):""; }
+/* ---------- Inbox (accept invites & reminders) ---------- */
+function pendingEvents(){ const t=todayISO(), me=myId(); if(!me)return [];
+  return state.events.filter(e=>occEnd(e)>=t && ((e.attendees&&e.attendees.length)?e.attendees.includes(me):true) && !((e.confirmedBy||[]).includes(me))).sort(sortEvents); }
+function pendingRems(){ const me=myId(); if(!me)return []; return state.reminders.filter(r=>!r.done && r.who===me && !r.ack); }
+function renderInbox(id){ const el=$("#"+id); if(!el)return; const me=myId();
+  if(!me){ if(id==="todayInbox"){ el.hidden=false; el.className="card inbox-hint"; el.innerHTML='<div style="font-size:.9rem;color:var(--text-soft)">👋 Tell Cuibul who you are — <b>More → You are on this device</b> — to get your invites and reminders here.</div>'; } else { el.hidden=true; el.innerHTML=""; } return; }
+  const evs=pendingEvents(), rems=pendingRems(), n=evs.length+rems.length;
+  if(!n){ el.hidden=true; el.innerHTML=""; return; }
+  el.hidden=false; el.className="inbox-card";
+  let h='<div class="inbox-head">📥 To review · '+n+'</div>';
+  evs.forEach(e=>{ const ty=EV_TYPES[e.type]||EV_TYPES.other;
+    h+='<div class="inbox-row"><div class="oi-icon" style="background:'+ty.soft+'">'+ty.emoji+'</div><div class="oi-main clickable" data-openevent="'+e.id+'"><div class="oi-title">'+esc(e.title)+'</div><div class="oi-sub">'+ty.label+' · '+fmtDay(e.date)+(e.time?" · "+fmtTime(e.time):"")+'</div></div><button class="btn sm accept-btn" data-acceptevent="'+e.id+'">Accept</button></div>'; });
+  rems.forEach(r=>{ h+='<div class="inbox-row"><div class="oi-icon" style="background:var(--green-soft)">✅</div><div class="oi-main clickable" data-remedit="'+r.id+'"><div class="oi-title">'+esc(r.text)+'</div><div class="oi-sub">Reminder for you'+(r.due?" · "+fmtDay(r.due):"")+'</div></div><button class="btn sm accept-btn" data-acceptrem="'+r.id+'">Accept</button></div>'; });
+  el.innerHTML=h;
+}
 
 /* ---------- Shopping ---------- */
 let shopGroup="shop", pendingFocusGroup=null;
@@ -1011,7 +1049,7 @@ function renderReminders(){
   const t=todayISO();
   wrap.innerHTML=`<div class="card tight">`+list.map(r=>{ const who=member(r.who); let dueTxt="";
     if(r.due){ const overdue=r.due<t&&!r.done; dueTxt=`<span style="color:${overdue?"var(--pink)":"var(--text-soft)"}">${overdue?"⚠ ":""}${fmtDay(r.due)}</span>`; }
-    return `<div class="list-item"><div class="check ${r.done?"on":""}" data-remtoggle="${r.id}">${r.done?"✓":""}</div><div class="li-main"><div class="li-title ${r.done?"done":""}">${esc(r.text)}</div>${dueTxt?`<div class="li-sub">${dueTxt}</div>`:""}</div>${who?`<div class="avatar" style="background:${who.color}">${avGlyph(who)}</div>`:""}<button class="del" data-remdel="${r.id}" aria-label="Delete">×</button></div>`; }).join("")+`</div>`;
+    return `<div class="list-item"><div class="check ${r.done?"on":""}" data-remtoggle="${r.id}">${r.done?"✓":""}</div><div class="li-main clickable" data-remedit="${r.id}"><div class="li-title ${r.done?"done":""}">${esc(r.text)}</div>${dueTxt?`<div class="li-sub">${dueTxt}</div>`:""}</div>${who?`<div class="avatar" style="background:${who.color}">${avGlyph(who)}</div>`:""}<button class="del" data-remdel="${r.id}" aria-label="Delete">×</button></div>`; }).join("")+`</div>`;
 }
 
 /* ---------- Calendar ---------- */
@@ -1021,7 +1059,7 @@ function occursOn(e,day){ return e.date<=day && day<=occEnd(e); }
 function isMulti(e){ return e.endDate&&e.endDate>e.date; }
 function sortEvents(a,b){ if(a.date!==b.date)return a.date<b.date?-1:1; return (a.time||"99")<(b.time||"99")?-1:1; }
 function eventsOn(day){ return state.events.filter(e=>occursOn(e,day)).sort(sortEvents); }
-function renderCalendar(){ const area=$("#calArea");
+function renderCalendar(){ renderInbox("calInbox"); const area=$("#calArea");
   area.innerHTML = calView==="agenda"?renderAgenda():calView==="week"?renderWeek():renderMonth(); }
 function renderAgenda(){
   const t=todayISO(); const list=state.events.filter(e=>occEnd(e)>=t).sort(sortEvents);
@@ -1094,7 +1132,8 @@ function renderNotes(){
 function renderMore(){
   $("#hubRem").textContent=`${state.reminders.filter(r=>!r.done).length} active`;
   $("#hubNotes").textContent=`${state.notes.length} note${state.notes.length!==1?"s":""}`;
-  $("#setName").value=state.name; $("#setYou").value=state.you||"";
+  $("#setName").value=state.name;
+  $("#setYou").innerHTML=`<option value="">— choose —</option>`+state.members.map(m=>`<option value="${m.id}" ${m.id===state.youId?"selected":""}>${esc(m.name)}</option>`).join("");
   $("#memberList").innerHTML=state.members.map(m=>`<span class="member-tag"><span class="avatar" style="background:${m.color}">${avGlyph(m)}</span>${esc(m.name)}<button class="del" data-memdel="${m.id}" style="font-size:1rem;padding:0 2px" aria-label="Remove">×</button></span>`).join("");
   $$("#themeSeg button").forEach(b=>b.classList.toggle("on",b.dataset.t===(state.theme||"auto")));
   $("#alertToggle").textContent = alertsEnabled?"✓ Browser alerts on":"Enable browser alerts";
@@ -1113,7 +1152,7 @@ function go(view,opts){ opts=opts||{}; if(opts.root){ stack.length=0; } else if(
 function back(){ if(!stack.length)return; currentView=stack.pop(); showView(currentView); $("#backBtn").hidden=stack.length===0; window.scrollTo(0,0); }
 $("#backBtn").onclick=back;
 $$("#nav button").forEach(b=>b.onclick=()=>go(b.dataset.view,{root:true}));
-document.addEventListener("click",e=>{ const g=e.target.closest("[data-go]"); if(g&&!e.target.closest("[data-openevent],[data-opennote],[data-itemedit]")) go(g.dataset.go); });
+document.addEventListener("click",e=>{ const g=e.target.closest("[data-go]"); if(g&&!e.target.closest("[data-openevent],[data-opennote],[data-itemedit],[data-remedit],[data-acceptevent],[data-acceptrem]")) go(g.dataset.go); });
 
 /* ---------- shopping add / group ---------- */
 function guessCategory(name){ const n=name.toLowerCase();
@@ -1123,10 +1162,18 @@ function guessCategory(name){ const n=name.toLowerCase();
     household:["toilet","paper","towel","soap","deterg","dishwasher","cleaner","bin","bags","sponge","shampoo","toothpaste","tissue","wipes","foil","nappy","nappies","diaper","diapers"],
     pantry:["pasta","rice","noodle","flour","sugar","oil","salt","sauce","beans","can","tin","cereal","coffee","tea","spice","stock","honey","jam","chocolate","biscuit","crisps","snack","water","juice","nuts"]};
   for(const c in map){ if(map[c].some(w=>n.includes(w))) return state.categories.find(x=>x.id===c)?c:"other"; } return "other"; }
+function guessShop(name,cat){ const n=name.toLowerCase();
+  const asian=["soy","noodle","noodles","rice","tofu","miso","sriracha","kimchi","wonton","ramen","udon","fish sauce","sesame","nori","dumpling","hoisin","panko","mochi","matcha","gochujang","curry paste","coconut milk","jasmine"];
+  const drug=["nappy","nappies","diaper","shampoo","conditioner","soap","toothpaste","tooth","deodorant","lotion","sunscreen","vitamin","plaster","cotton","wipes","tissue","razor","detergent","cleaner","sponge","toilet","makeup","cream","toiletr","cosmetic","hygiene"];
+  const findShop=preds=>{ const sh=state.shops.find(x=>preds.some(p=>(x.label||"").toLowerCase().includes(p))); return sh?sh.id:""; };
+  if(asian.some(w=>n.includes(w))){ const id=findShop(["asia"]); if(id)return id; }
+  if(drug.some(w=>n.includes(w))||cat==="household"){ const id=findShop(["dm","drog","rossmann","müller","muller","drug"]); if(id)return id; }
+  if(["produce","dairy","bakery","meat","pantry","frozen"].includes(cat)){ const id=findShop(["netto","rewe","edeka","aldi","lidl","kaufland","super","market","markt","grocer"]); if(id)return id; }
+  return ""; }
 function addShop(){ const inp=$("#shopInput"),raw=inp.value.trim(); if(!raw)return;
   let name=raw,qty=""; const m1=raw.match(/^(\d+\s*\w*)\s+(.+)$/),m2=raw.match(/^(.+?)\s*[x×]\s*(\d+)$/i);
   if(m2){name=m2[1].trim();qty=m2[2];} else if(m1&&/^\d/.test(raw)){qty=m1[1].trim();name=m1[2].trim();}
-  state.shopping.unshift({id:uid(),name,qty,cat:guessCategory(name),shop:"",done:false}); inp.value=""; save(); renderShopping(); renderToday(); }
+  const gc=guessCategory(name); state.shopping.unshift({id:uid(),name,qty,cat:gc,shop:guessShop(name,gc),done:false}); inp.value=""; save(); renderShopping(); renderToday(); }
 $("#shopAddBtn").onclick=addShop;
 $("#shopInput").addEventListener("keydown",e=>{ if(e.key==="Enter")addShop(); });
 $$("#shopGroupToggle .gt-opt").forEach(b=>b.onclick=()=>{ shopGroup=b.dataset.g; renderShopping(); });
@@ -1136,10 +1183,19 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-addgroup]
 
 /* ---------- reminders add ---------- */
 function addRem(){ const inp=$("#remInput"),txt=inp.value.trim(); if(!txt)return;
-  state.reminders.unshift({id:uid(),text:txt,due:"",who:"",done:false}); inp.value=""; save(); renderReminders(); renderToday(); renderMore(); }
+  state.reminders.unshift({id:uid(),text:txt,due:"",who:"",done:false,ack:false}); inp.value=""; save(); renderReminders(); renderToday(); renderMore(); }
 $("#remAddBtn").onclick=addRem;
 $("#remInput").addEventListener("keydown",e=>{ if(e.key==="Enter")addRem(); });
 $$("#remFilter button").forEach(b=>b.onclick=()=>{ remFilter=b.dataset.f; $$("#remFilter button").forEach(x=>x.classList.toggle("on",x===b)); renderReminders(); });
+/* reminder edit modal */
+let remEditId=null, rmWhoSel="";
+function openRemModal(id){ const r=state.reminders.find(x=>x.id===id); if(!r)return; remEditId=id; rmWhoSel=r.who||"";
+  $("#rmText").value=r.text; $("#rmDue").value=r.due||""; renderRmWho(); $("#remModal").classList.add("open"); }
+function renderRmWho(){ $("#rmWho").innerHTML=`<button class="chip ${rmWhoSel===""?"active":""}" data-rmwho="">Anyone</button>`+state.members.map(m=>`<button class="chip ${rmWhoSel===m.id?"active":""}" data-rmwho="${m.id}"><span class="dot" style="background:${m.color}"></span>${esc(m.name)}</button>`).join(""); }
+$("#rmWho").addEventListener("click",e=>{ const b=e.target.closest("[data-rmwho]"); if(!b)return; rmWhoSel=b.dataset.rmwho; renderRmWho(); });
+$("#remModal").addEventListener("click",e=>{ if(e.target.id==="remModal")$("#remModal").classList.remove("open"); });
+$("#rmSave").onclick=()=>{ const r=state.reminders.find(x=>x.id===remEditId); if(r){ const tx=$("#rmText").value.trim(); if(tx)r.text=tx; r.due=$("#rmDue").value; if(rmWhoSel!==r.who){ r.who=rmWhoSel; r.ack=false; } save(); renderReminders(); renderToday(); renderMore(); } $("#remModal").classList.remove("open"); };
+$("#rmDelete").onclick=()=>{ state.reminders=state.reminders.filter(x=>x.id!==remEditId); save(); renderReminders(); renderToday(); renderMore(); $("#remModal").classList.remove("open"); };
 
 /* ---------- calendar seg + nav ---------- */
 $$("#calSeg button").forEach(b=>b.onclick=()=>{ calView=b.dataset.v; $$("#calSeg button").forEach(x=>x.classList.toggle("on",x===b)); renderCalendar(); });
@@ -1152,8 +1208,11 @@ $("#calArea").addEventListener("click",e=>{
 
 /* ---------- global toggles/deletes/opens ---------- */
 document.addEventListener("click",e=>{
-  const t=e.target.closest("[data-shoptoggle],[data-shopdel],[data-remtoggle],[data-remdel],[data-memdel],[data-mealedit],[data-opennote],[data-openevent],[data-itemedit],[data-shopremove]");
+  const t=e.target.closest("[data-shoptoggle],[data-shopdel],[data-remtoggle],[data-remdel],[data-memdel],[data-mealedit],[data-opennote],[data-openevent],[data-itemedit],[data-shopremove],[data-acceptevent],[data-acceptrem],[data-remedit]");
   if(!t)return;
+  if(t.dataset.acceptevent){ const ev=state.events.find(x=>x.id===t.dataset.acceptevent); if(ev){ ev.confirmedBy=ev.confirmedBy||[]; if(myId()&&!ev.confirmedBy.includes(myId()))ev.confirmedBy.push(myId()); save(); renderToday(); renderCalendar(); } return; }
+  if(t.dataset.acceptrem){ const r=state.reminders.find(x=>x.id===t.dataset.acceptrem); if(r){ r.ack=true; save(); renderToday(); renderCalendar(); renderReminders(); } return; }
+  if(t.dataset.remedit){ openRemModal(t.dataset.remedit); return; }
   if(t.dataset.shoptoggle){ const i=state.shopping.find(x=>x.id===t.dataset.shoptoggle); if(i){i.done=!i.done; save(); renderShopping(); renderToday();} }
   else if(t.dataset.shopdel){ state.shopping=state.shopping.filter(x=>x.id!==t.dataset.shopdel); save(); renderShopping(); renderToday(); }
   else if(t.dataset.remtoggle){ const r=state.reminders.find(x=>x.id===t.dataset.remtoggle); if(r){r.done=!r.done; save(); renderReminders(); renderToday(); renderMore();} }
@@ -1167,8 +1226,8 @@ document.addEventListener("click",e=>{
 });
 
 /* ---------- settings: name/members/shops/cats/theme ---------- */
-$("#saveName").onclick=()=>{ const v=$("#setName").value.trim(); const y=$("#setYou").value.trim();
-  if(v){ state.name=v; $("#familyName").textContent=v; } if(y){ state.you=y; } save(); renderToday(); pushPresence(); };
+$("#saveName").onclick=()=>{ const v=$("#setName").value.trim(); const y=$("#setYou").value;
+  if(v){ state.name=v; $("#familyName").textContent=v; } state.youId=y||""; save(); renderAll(); pushPresence(); };
 function addMember(){ const inp=$("#memberInput"),v=inp.value.trim(); if(!v)return; state.members.push({id:uid(),name:v,color:MEMBER_COLORS[state.members.length%MEMBER_COLORS.length],bird:BIRDS[state.members.length%BIRDS.length]}); inp.value=""; save(); renderMore(); }
 $("#memberAddBtn").onclick=addMember; $("#memberInput").addEventListener("keydown",e=>{ if(e.key==="Enter")addMember(); });
 $$("#themeSeg button").forEach(b=>b.onclick=()=>{ state.theme=b.dataset.t; save(); applyTheme(); renderMore(); });
