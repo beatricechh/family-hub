@@ -441,9 +441,10 @@
       <div class="addrow" style="margin-bottom:0;"><input type="text" id="memberInput" placeholder="Add a family member…" autocomplete="off"><button class="btn" id="memberAddBtn">Add</button></div>
     </div>
     <div class="card">
-      <div style="font-weight:600; margin-bottom:10px;">Event alerts (this device)</div>
-      <div style="font-size:.85rem;color:var(--text-soft);margin-bottom:12px;">Demo: get a browser pop-up before events with an alert set, while this page is open. Real phone notifications come with the live version.</div>
-      <button class="btn ghost sm block" id="alertToggle">Enable browser alerts</button>
+      <div style="font-weight:600; margin-bottom:10px;">🔔 Notifications (this device)</div>
+      <div style="font-size:.85rem;color:var(--text-soft);margin-bottom:12px;" id="notifHint">Get a phone alert for appointment reminders, new reminders for you, and new calendar invites — even when the app is closed.</div>
+      <button class="btn sm block" id="notifToggle">Turn on notifications</button>
+      <div class="fh-msg" id="notifMsg" style="margin-top:8px;"></div>
     </div>
     <div class="card">
       <div style="font-weight:600; margin-bottom:10px;">Appearance</div>
@@ -1136,7 +1137,7 @@ function renderMore(){
   $("#setYou").innerHTML=`<option value="">— choose —</option>`+state.members.map(m=>`<option value="${m.id}" ${m.id===state.youId?"selected":""}>${esc(m.name)}</option>`).join("");
   $("#memberList").innerHTML=state.members.map(m=>`<span class="member-tag"><span class="avatar" style="background:${m.color}">${avGlyph(m)}</span>${esc(m.name)}<button class="del" data-memdel="${m.id}" style="font-size:1rem;padding:0 2px" aria-label="Remove">×</button></span>`).join("");
   $$("#themeSeg button").forEach(b=>b.classList.toggle("on",b.dataset.t===(state.theme||"auto")));
-  $("#alertToggle").textContent = alertsEnabled?"✓ Browser alerts on":"Enable browser alerts";
+  if(typeof syncNotifUI==="function") syncNotifUI();
 }
 
 /* ---------- theme ---------- */
@@ -1183,7 +1184,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-addgroup]
 
 /* ---------- reminders add ---------- */
 function addRem(){ const inp=$("#remInput"),txt=inp.value.trim(); if(!txt)return;
-  state.reminders.unshift({id:uid(),text:txt,due:"",who:"",done:false,ack:false}); inp.value=""; save(); renderReminders(); renderToday(); renderMore(); }
+  state.reminders.unshift({id:uid(),text:txt,due:"",who:"",done:false,ack:false,createdBy:myId(),created:Date.now()}); inp.value=""; save(); renderReminders(); renderToday(); renderMore(); }
 $("#remAddBtn").onclick=addRem;
 $("#remInput").addEventListener("keydown",e=>{ if(e.key==="Enter")addRem(); });
 $$("#remFilter button").forEach(b=>b.onclick=()=>{ remFilter=b.dataset.f; $$("#remFilter button").forEach(x=>x.classList.toggle("on",x===b)); renderReminders(); });
@@ -1233,24 +1234,62 @@ $("#memberAddBtn").onclick=addMember; $("#memberInput").addEventListener("keydow
 $$("#themeSeg button").forEach(b=>b.onclick=()=>{ state.theme=b.dataset.t; save(); applyTheme(); renderMore(); });
 $("#resetBtn").onclick=()=>{ if(confirm("Reset everything back to the sample data?")){ state=seed(); save(); renderAll(); go("today",{root:true}); } };
 
-/* ---------- event alerts (demo) ---------- */
-let alertsEnabled=false, alertTimers=[];
-$("#alertToggle").onclick=async()=>{
-  if(!("Notification" in window)){ alert("This browser doesn't support notifications."); return; }
-  if(!alertsEnabled){ const p=await Notification.requestPermission(); if(p==="granted"){ alertsEnabled=true; scheduleAlerts(); } else { alert("Notifications were blocked. You can enable them in your browser settings."); } }
-  else { alertsEnabled=false; alertTimers.forEach(clearTimeout); alertTimers=[]; }
-  renderMore();
-};
-function scheduleAlerts(){
-  if(!alertsEnabled||!("Notification" in window)||Notification.permission!=="granted")return;
-  alertTimers.forEach(clearTimeout); alertTimers=[];
-  const now=Date.now(); const t=todayISO();
-  state.events.filter(e=>e.date===t&&e.time&&e.remind&&e.remind!=="none").forEach(e=>{
-    const lead=REMIND_MIN[e.remind]||0; const[h,m]=e.time.split(":"); const evTime=new Date(t+"T00:00:00"); evTime.setHours(+h,+m);
-    const fire=evTime.getTime()-lead*60000; const delay=fire-now;
-    if(delay>0&&delay<24*3600000){ alertTimers.push(setTimeout(()=>{ try{ new Notification("⏰ "+e.title,{body:(e.time?fmtTime(e.time):"")+(e.location?" · "+e.location.split(",")[0]:"")}); }catch(err){} },delay)); }
-  });
+/* ---------- push notifications (real, phone) ---------- */
+/* Keeps a demo scheduleAlerts() no-op so old calls stay safe. */
+function scheduleAlerts(){}
+function pushSupported(){ return ("serviceWorker" in navigator) && ("PushManager" in window) && ("Notification" in window); }
+function isIOS(){ return /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1); }
+function isStandalone(){ return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone===true; }
+function urlB64ToUint8(base64){ const pad="=".repeat((4-base64.length%4)%4); const b=(base64+pad).replace(/-/g,"+").replace(/_/g,"/");
+  const raw=atob(b); const arr=new Uint8Array(raw.length); for(let i=0;i<raw.length;i++)arr[i]=raw.charCodeAt(i); return arr; }
+function notifMsg(t,ok){ const el=$("#notifMsg"); if(el){ el.textContent=t||""; el.style.color=ok===false?"var(--danger,#c0392b)":"var(--accent-text)"; } }
+
+async function currentPushSub(){ try{ const reg=await navigator.serviceWorker.ready; return await reg.pushManager.getSubscription(); }catch(e){ return null; } }
+function refreshNotifUI(sub){
+  const btn=$("#notifToggle"); if(!btn)return;
+  if(!pushSupported()){ btn.disabled=true; btn.textContent="Not supported on this browser"; $("#notifHint").textContent="This browser can't do notifications. On iPhone use Safari and add Cuibul to your home screen first."; return; }
+  if(isIOS() && !isStandalone()){ btn.disabled=true; btn.textContent="Add to home screen first";
+    $("#notifHint").innerHTML="To get notifications on iPhone: tap the <b>Share</b> button in Safari → <b>Add to Home Screen</b>, then open Cuibul from your home screen and come back here."; return; }
+  btn.disabled=false;
+  if(sub){ btn.textContent="✓ Notifications on — tap to turn off"; }
+  else { btn.textContent="Turn on notifications"; }
 }
+async function subscribePush(){
+  const vapid=(fhCfg().vapidPublicKey||"").trim();
+  if(!sb||!hid){ notifMsg("Connect to your family first (sign in), then try again.",false); return; }
+  if(!vapid){ notifMsg("Notifications aren't configured yet.",false); return; }
+  if(!state.youId){ notifMsg("First tell the app who you are (the “You are” box above), so alerts go to the right person.",false); return; }
+  try{
+    const perm=await Notification.requestPermission();
+    if(perm!=="granted"){ notifMsg("Notifications were blocked. You can allow them in your phone's settings for Cuibul.",false); return; }
+    const reg=await navigator.serviceWorker.ready;
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub){ sub=await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:urlB64ToUint8(vapid)}); }
+    const j=sub.toJSON(); const keys=j.keys||{};
+    const { error } = await sb.from("push_subscriptions").upsert({
+      household_id:hid, user_id:(meUser&&meUser.id)||null, member_id:state.youId,
+      endpoint:sub.endpoint, p256dh:keys.p256dh, auth:keys.auth,
+      ua:navigator.userAgent.slice(0,180), updated_at:new Date().toISOString()
+    },{onConflict:"endpoint"});
+    if(error){ notifMsg("Couldn't save your notification setup — try again.",false); return; }
+    notifMsg("Notifications are on for this device 🎉");
+    refreshNotifUI(sub);
+  }catch(e){ notifMsg("Something went wrong turning on notifications.",false); }
+}
+async function unsubscribePush(){
+  try{
+    const sub=await currentPushSub();
+    if(sub){ if(sb&&hid){ try{ await sb.from("push_subscriptions").delete().eq("endpoint",sub.endpoint); }catch(e){} }
+      await sub.unsubscribe(); }
+    notifMsg("Notifications turned off for this device.");
+    refreshNotifUI(null);
+  }catch(e){ notifMsg("Couldn't turn them off — try again.",false); }
+}
+(function bindNotif(){ const btn=$("#notifToggle"); if(!btn)return;
+  btn.onclick=async()=>{ const sub=await currentPushSub(); if(sub) await unsubscribePush(); else await subscribePush(); };
+})();
+// keep the button label in sync when the More screen shows
+async function syncNotifUI(){ if(!pushSupported()){ refreshNotifUI(null); return; } refreshNotifUI(await currentPushSub()); }
 
 /* ---------- event add/edit modal ---------- */
 let evTypeSel="doctor", evAttSel=[], evEditId=null;
@@ -1280,7 +1319,7 @@ $("#evSave").onclick=()=>{
   let endDate=$("#evEndDate").value; if(endDate&&endDate<date)endDate="";
   const data={title,date,endDate,time:$("#evTime").value,location:$("#evLoc").value.trim(),type:evTypeSel,attendees:[...evAttSel],remind:$("#evRemind").value};
   if(evEditId){ const e=state.events.find(x=>x.id===evEditId); if(e){ Object.assign(e,data); e.confirmedBy=(e.confirmedBy||[]).filter(id=>attNeeded(e).includes(id)); } }
-  else { state.events.push({id:uid(),...data,confirmedBy:[],created:Date.now()}); }
+  else { state.events.push({id:uid(),...data,confirmedBy:[],created:Date.now(),createdBy:myId()}); }
   save(); $("#evModal").classList.remove("open"); if(calView!=="agenda")calSelDay=date; renderCalendar(); renderToday();
 };
 
