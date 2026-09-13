@@ -17,6 +17,7 @@
     --green:#2fb46b; --green-soft:#dcf4e6; --blue:#3b82f6; --blue-soft:#e3ecfe;
     --purple:#7c6cf0; --purple-soft:#e9e6fd; --pink:#ec4f8c; --pink-soft:#fde0ec;
     --amber:#e0a72e; --amber-soft:#f8edd2;
+    --teal:#0d9aa0; --teal-soft:#d3eff0; --orange:#ef7a2f; --orange-soft:#fce6d5;
     --shadow:0 1px 2px rgba(20,30,40,.05), 0 8px 24px rgba(20,30,40,.07);
     --radius:16px; --radius-sm:11px; --nav-h:66px;
   }
@@ -27,6 +28,7 @@
     --green:#45c97e; --green-soft:#173021; --blue:#5b9bff; --blue-soft:#182740;
     --purple:#9b8cff; --purple-soft:#231f3a; --pink:#ff6fa3; --pink-soft:#341f2a;
     --amber:#eec25a; --amber-soft:#332913;
+    --teal:#3fcfce; --teal-soft:#0e3231; --orange:#ff9a57; --orange-soft:#3a2413;
     --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.4);
   } }
   :root[data-theme="dark"] {
@@ -36,6 +38,7 @@
     --green:#45c97e; --green-soft:#173021; --blue:#5b9bff; --blue-soft:#182740;
     --purple:#9b8cff; --purple-soft:#231f3a; --pink:#ff6fa3; --pink-soft:#341f2a;
     --amber:#eec25a; --amber-soft:#332913;
+    --teal:#3fcfce; --teal-soft:#0e3231; --orange:#ff9a57; --orange-soft:#3a2413;
     --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.4);
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -61,6 +64,18 @@
   h2.section .link { font-size:.82rem; font-weight:600; color:var(--accent-text); cursor:pointer; }
 
   .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px; margin-bottom:14px; }
+  .toast { position:fixed; left:50%; bottom:84px; transform:translateX(-50%) translateY(12px); background:var(--text); color:var(--surface); padding:11px 18px; border-radius:999px; font-size:.9rem; font-weight:600; box-shadow:0 8px 24px rgba(0,0,0,.22); opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; z-index:600; max-width:88vw; text-align:center; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .modal.tour { text-align:center; }
+  .tour-slide { padding:12px 4px 2px; min-height:190px; }
+  .tour-emoji { font-size:3rem; display:block; margin-bottom:12px; }
+  .tour-title { font-size:1.2rem; font-weight:700; margin-bottom:8px; }
+  .tour-body { color:var(--text-soft); font-size:.96rem; line-height:1.55; }
+  .tour-dots { display:flex; gap:7px; justify-content:center; margin:16px 0 2px; }
+  .tour-dot { width:7px; height:7px; border-radius:50%; background:var(--border); transition:background .2s; }
+  .tour-dot.on { background:var(--accent); }
+  .fb-item { background:var(--surface-2); border-radius:10px; padding:9px 12px; margin-bottom:8px; font-size:.88rem; }
+  .fb-item .fb-meta { color:var(--text-faint); font-size:.74rem; margin-top:3px; }
   .card.tight { padding:6px; }
 
   .greeting { padding:8px 2px 2px; }
@@ -84,7 +99,7 @@
   @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.35;} }
 
   /* Today hero (today's events) */
-  .hero { border-radius:var(--radius); padding:18px 18px 14px; margin:16px 0 4px; color:#fff; background:linear-gradient(135deg,#8f80f7,#6a58e0); box-shadow:0 8px 24px rgba(106,88,224,.30); }
+  .hero { border-radius:var(--radius); padding:18px 18px 14px; margin:16px 0 22px; color:#fff; background:linear-gradient(135deg,#8f80f7,#6a58e0); box-shadow:0 8px 24px rgba(106,88,224,.30); }
   :root[data-theme="dark"] .hero, :root:not([data-theme="light"]) .hero { background:linear-gradient(135deg,#7061d8,#5544bd); }
   .hero .h-lbl { font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; opacity:.85; }
   .hero .h-ev { display:flex; align-items:center; gap:11px; padding:9px 0; border-top:1px solid rgba(255,255,255,.18); margin-top:8px; }
@@ -119,8 +134,8 @@
   .shop-preview { display:flex; flex-wrap:wrap; gap:8px; }
   .shop-chip { display:inline-flex; align-items:center; gap:7px; background:var(--accent-soft); border:1px solid transparent; color:var(--text); border-radius:14px; padding:9px 14px; font-size:.94rem; font-weight:550; }
   .shop-chip .sc-qty { background:var(--surface); color:var(--accent-text); font-weight:700; font-size:.72rem; padding:1px 8px; border-radius:10px; }
-  .inbox-card { background:var(--accent-soft); border:1px solid transparent; border-radius:var(--radius); box-shadow:var(--shadow); padding:12px 15px; margin:14px 0 4px; }
-  .inbox-head { font-size:.76rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:var(--accent-text); margin-bottom:2px; }
+  .inbox-card { background:var(--amber-soft); border:1px solid transparent; border-left:4px solid var(--amber); border-radius:var(--radius); box-shadow:var(--shadow); padding:12px 15px; margin:16px 0 6px; }
+  .inbox-head { font-size:.76rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:var(--text); margin-bottom:4px; }
   .inbox-row { display:flex; align-items:center; gap:11px; padding:10px 0; border-top:1px solid rgba(120,120,120,.18); }
   .inbox-row:first-of-type { border-top:none; }
   .inbox-card .oi-icon { width:34px; height:34px; border-radius:10px; flex:none; display:grid; place-items:center; font-size:1rem; }
@@ -441,8 +456,8 @@
       <div class="addrow" style="margin-bottom:0;"><input type="text" id="memberInput" placeholder="Add a family member…" autocomplete="off"><button class="btn" id="memberAddBtn">Add</button></div>
     </div>
     <div class="card">
-      <div style="font-weight:600; margin-bottom:10px;">🔔 Notifications (this device)</div>
-      <div style="font-size:.85rem;color:var(--text-soft);margin-bottom:12px;" id="notifHint">Get a phone alert for appointment reminders, new reminders for you, and new calendar invites — even when the app is closed.</div>
+      <div style="font-weight:600; margin-bottom:10px;">🔔 Notifications</div>
+      <div style="font-size:.85rem;color:var(--text-soft);margin-bottom:12px;" id="notifHint">Get alerts for appointments, new reminders and invites — even when Cuibul is closed.</div>
       <button class="btn sm block" id="notifToggle">Turn on notifications</button>
       <div class="fh-msg" id="notifMsg" style="margin-top:8px;"></div>
     </div>
@@ -458,7 +473,8 @@
     </div>
     <div class="card" style="color:var(--text-soft); font-size:.9rem;">
       <div id="aboutText">Your family dashboard.</div>
-      <button class="btn ghost sm block" id="resetBtn" style="margin-top:14px;">Reset to sample data</button>
+      <button class="btn ghost sm block" id="tourBtn" style="margin-top:14px;">✨ Take the tour</button>
+      <button class="btn ghost sm block" id="feedbackBtn" style="margin-top:8px;">💬 Send feedback / an idea</button>
     </div>
   </section>
 
@@ -550,6 +566,29 @@
   </div>
 </div>
 
+<!-- ===== Tour / What's new ===== -->
+<div class="modal-back" id="tourModal">
+  <div class="modal tour">
+    <div class="tour-slide" id="tourSlide"></div>
+    <div class="tour-dots" id="tourDots"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="tourSkip" style="flex:1;">Skip</button>
+      <button class="btn" id="tourNext" style="flex:2;">Next</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Feedback ===== -->
+<div class="modal-back" id="feedbackModal">
+  <div class="modal">
+    <h3>💬 Send feedback</h3>
+    <div style="font-size:.86rem;color:var(--text-soft);margin-bottom:10px;">Spotted a bug or have an idea to make Cuibul better? Tell us — the whole family can see suggestions here.</div>
+    <div class="field"><textarea id="fbText" rows="4" placeholder="Your idea or feedback…"></textarea></div>
+    <div class="modal-actions"><button class="btn ghost" id="fbCancel" style="flex:1;">Close</button><button class="btn" id="fbSend" style="flex:2;">Send</button></div>
+    <div id="fbList" style="margin-top:14px;"></div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <script>
@@ -562,9 +601,13 @@ const DEFAULT_CATS=[
 ];
 const EV_TYPES={
   doctor:{label:"Doctor",color:"var(--pink)",soft:"var(--pink-soft)",emoji:"🩺"},
-  travel:{label:"Travel",color:"var(--blue)",soft:"var(--blue-soft)",emoji:"✈️"},
   school:{label:"School",color:"var(--purple)",soft:"var(--purple-soft)",emoji:"🎒"},
   social:{label:"Social",color:"var(--green)",soft:"var(--green-soft)",emoji:"🎉"},
+  travel:{label:"Travel",color:"var(--blue)",soft:"var(--blue-soft)",emoji:"✈️"},
+  worktrip:{label:"Work trip",color:"var(--teal)",soft:"var(--teal-soft)",emoji:"💼"},
+  outing:{label:"Family outing",color:"var(--orange)",soft:"var(--orange-soft)",emoji:"🌳"},
+  daily:{label:"Daily things",color:"var(--amber)",soft:"var(--amber-soft)",emoji:"☀️"},
+  errands:{label:"Errands",color:"var(--blue)",soft:"var(--blue-soft)",emoji:"🛍️"},
   chore:{label:"Home",color:"var(--accent)",soft:"var(--accent-soft)",emoji:"🔧"},
   other:{label:"Other",color:"var(--text-soft)",soft:"var(--surface-2)",emoji:"📌"},
 };
@@ -640,6 +683,7 @@ function seed(){
         {id:uid(),text:"Sun hat",done:false},{id:uid(),text:"Refill water bottle",done:false},{id:uid(),text:"Comfort blanket",done:true}]},
       {id:uid(),emoji:"🏡",title:"House & errands",items:[{id:uid(),text:"Return library books",done:false},{id:uid(),text:"Order more coffee pods",done:false}]},
     ],
+    feedback:[],
   };
 }
 
@@ -647,7 +691,7 @@ let state;
 function migrate(s){
   s.meals=s.meals||{}; s.notes=s.notes||[]; s.members=s.members||[]; s.shopping=s.shopping||[];
   s.reminders=s.reminders||[]; s.events=s.events||[]; s.theme=s.theme||"auto"; s.name=s.name||"Cuibul";
-  s.you=s.you||"Beatrice"; s.youId=s.youId||"";
+  s.you=s.you||"Beatrice"; s.youId=s.youId||""; s.feedback=s.feedback||[];
   s.reminders.forEach(r=>{ if(r.ack===undefined)r.ack=false; });
   if(!s.categories||!s.categories.length) s.categories=DEFAULT_CATS.map(c=>({...c}));
   if(!s.shops) s.shops=[{id:uid(),label:"Asian store"},{id:uid(),label:"DM"},{id:uid(),label:"Netto"}];
@@ -664,6 +708,10 @@ function load(){
 }
 function save(){ try{ localStorage.setItem(STORE_KEY,JSON.stringify(state)); }catch(e){} scheduleAlerts(); scheduleDbWrite(); }
 function member(id){ return state.members.find(m=>m.id===id); }
+let _toastEl=null,_toastT=null;
+function toast(msg){ if(!_toastEl){ _toastEl=document.createElement("div"); _toastEl.className="toast"; document.body.appendChild(_toastEl); }
+  _toastEl.textContent=msg; requestAnimationFrame(()=>_toastEl.classList.add("show"));
+  clearTimeout(_toastT); _toastT=setTimeout(()=>_toastEl.classList.remove("show"),2200); }
 
 /* ===================== SHARED BACKEND (Supabase) ===================== */
 /* Standalone app: family data lives in your Supabase project and syncs
@@ -672,14 +720,14 @@ function member(id){ return state.members.find(m=>m.id===id); }
    theme) stay in localStorage per device. */
 let sb=null, hid=null, meUser=null, routed=false, syncReady=false, pendingRender=false;
 let dbWriteTimer=null; const lastJSON={}; const myPresKey=uid();
-const COLS=["config","shopping","reminders","events","notes","meals"];
+const COLS=["config","shopping","reminders","events","notes","meals","feedback"];
 function fhCfg(){ return (window.FH_CONFIG||{}); }
 function configured(){ const c=fhCfg(); return !!(c.url&&c.anonKey&&window.supabase); }
 
 function collDocs(){ return {
   config:{name:state.name,members:state.members,shops:state.shops,categories:state.categories,seeded:true},
   shopping:{items:state.shopping}, reminders:{items:state.reminders}, events:{items:state.events},
-  notes:{items:state.notes}, meals:{map:state.meals} }; }
+  notes:{items:state.notes}, meals:{map:state.meals}, feedback:{items:state.feedback} }; }
 function applyDoc(name,v){ v=v||{};
   if(name==="config"){ if(v.name)state.name=v.name; if(Array.isArray(v.members))state.members=v.members;
     if(Array.isArray(v.shops))state.shops=v.shops; if(Array.isArray(v.categories))state.categories=v.categories; }
@@ -688,6 +736,7 @@ function applyDoc(name,v){ v=v||{};
   else if(name==="events") state.events=Array.isArray(v.items)?v.items:[];
   else if(name==="notes") state.notes=Array.isArray(v.items)?v.items:[];
   else if(name==="meals") state.meals=(v.map&&typeof v.map==="object")?v.map:{};
+  else if(name==="feedback") state.feedback=Array.isArray(v.items)?v.items:[];
 }
 function scheduleDbWrite(){ if(!sb||!hid||!syncReady)return; clearTimeout(dbWriteTimer); dbWriteTimer=setTimeout(flushDb,350); }
 async function flushDb(){ if(!sb||!hid||!syncReady)return; const m=collDocs();
@@ -706,7 +755,7 @@ function subscribeLive(){ try{ sb.channel("rt-"+hid)
   .subscribe(); }catch(e){} }
 async function seedHousehold(){ const s=seed();
   state.name=s.name; state.members=s.members; state.shops=s.shops; state.categories=s.categories;
-  state.shopping=s.shopping; state.reminders=s.reminders; state.events=s.events; state.notes=s.notes; state.meals=s.meals;
+  state.shopping=s.shopping; state.reminders=s.reminders; state.events=s.events; state.notes=s.notes; state.meals=s.meals; state.feedback=s.feedback;
   syncReady=true; const m=collDocs();
   for(const name of COLS){ lastJSON[name]=JSON.stringify(m[name]);
     try{ await sb.from("collections").upsert({household_id:hid,name:name,data:m[name]}); }catch(e){} } }
@@ -743,7 +792,7 @@ function showLoading(){ $("#loadingScreen").hidden=false; $(".app").hidden=true;
 
 async function boot(){
   load();                       // localStorage cache -> instant paint
-  if(!configured()){ setSyncLive(false); renderAll(); renderWeather(); showApp(); return; }
+  if(!configured()){ setSyncLive(false); renderAll(); renderWeather(); showApp(); maybeTour(); return; }
   sb = window.supabase.createClient(fhCfg().url, fhCfg().anonKey);
   renderWeather(); showLoading();
   try{
@@ -764,8 +813,13 @@ async function routeSession(session){
 async function enterApp(justCreated){
   showApp(); const ac=$("#accountCard"); if(ac)ac.hidden=false;
   if(!justCreated){ await primeFromDb(); syncReady=true; }
+  autoIdentity();
   renderAll(); subscribeLive(); initPresence(); setSyncLive(true); loadInviteCode();
+  maybeTour();
 }
+/* Remember who you are across devices: map your login to a family member. */
+function autoIdentity(){ if(!state.youId && meUser && meUser.id){ const me=state.members.find(m=>m.userId===meUser.id);
+  if(me){ state.youId=me.id; try{ localStorage.setItem(STORE_KEY,JSON.stringify(state)); }catch(e){} } } }
 async function loadInviteCode(){ try{ const {data}=await sb.from("households").select("invite_code").eq("id",hid).single();
   if(data){ const el=$("#inviteCode"); if(el)el.textContent=data.invite_code; } }catch(e){} }
 
@@ -871,7 +925,7 @@ function renderWeather(){
         <div class="wc-temp"><span class="wc-icon">${wIcon(code)}</span><span class="wc-now">${cur}°</span></div>
         <div class="wc-details"><span>Berlin · H ${hi}° / L ${lo}°</span><span>🌧 ${rain}% rain</span><span class="wc-jacket">${jacket(hi,rain)}</span></div></div>`;
     })
-    .catch(()=>{ el.innerHTML=`<div class="weather-card"><div class="wc-loading">🌤️ Live weather isn't available in the shared app yet.</div></div>`; });
+    .catch(()=>{ el.innerHTML=`<div class="weather-card"><div class="wc-loading">🌤️ Couldn't load the weather right now.</div></div>`; });
 }
 
 /* ---------- Today ---------- */
@@ -929,7 +983,7 @@ function renderInbox(id){ const el=$("#"+id); if(!el)return; const me=myId();
   const evs=pendingEvents(), rems=pendingRems(), n=evs.length+rems.length;
   if(!n){ el.hidden=true; el.innerHTML=""; return; }
   el.hidden=false; el.className="inbox-card";
-  let h='<div class="inbox-head">📥 To review · '+n+'</div>';
+  let h='<div class="inbox-head">📥 Needs your OK · '+n+'</div>';
   evs.forEach(e=>{ const ty=EV_TYPES[e.type]||EV_TYPES.other;
     h+='<div class="inbox-row"><div class="oi-icon" style="background:'+ty.soft+'">'+ty.emoji+'</div><div class="oi-main clickable" data-openevent="'+e.id+'"><div class="oi-title">'+esc(e.title)+'</div><div class="oi-sub">'+ty.label+' · '+fmtDay(e.date)+(e.time?" · "+fmtTime(e.time):"")+'</div></div><button class="btn sm accept-btn" data-acceptevent="'+e.id+'">Accept</button></div>'; });
   rems.forEach(r=>{ h+='<div class="inbox-row"><div class="oi-icon" style="background:var(--green-soft)">✅</div><div class="oi-main clickable" data-remedit="'+r.id+'"><div class="oi-title">'+esc(r.text)+'</div><div class="oi-sub">Reminder for you'+(r.due?" · "+fmtDay(r.due):"")+'</div></div><button class="btn sm accept-btn" data-acceptrem="'+r.id+'">Accept</button></div>'; });
@@ -1228,11 +1282,12 @@ document.addEventListener("click",e=>{
 
 /* ---------- settings: name/members/shops/cats/theme ---------- */
 $("#saveName").onclick=()=>{ const v=$("#setName").value.trim(); const y=$("#setYou").value;
-  if(v){ state.name=v; $("#familyName").textContent=v; } state.youId=y||""; save(); renderAll(); pushPresence(); };
+  if(v){ state.name=v; $("#familyName").textContent=v; } state.youId=y||"";
+  if(y && meUser && meUser.id){ state.members.forEach(m=>{ if(m.userId===meUser.id) delete m.userId; }); const me=member(y); if(me) me.userId=meUser.id; }
+  save(); renderAll(); pushPresence(); toast("Saved ✓"); };
 function addMember(){ const inp=$("#memberInput"),v=inp.value.trim(); if(!v)return; state.members.push({id:uid(),name:v,color:MEMBER_COLORS[state.members.length%MEMBER_COLORS.length],bird:BIRDS[state.members.length%BIRDS.length]}); inp.value=""; save(); renderMore(); }
 $("#memberAddBtn").onclick=addMember; $("#memberInput").addEventListener("keydown",e=>{ if(e.key==="Enter")addMember(); });
 $$("#themeSeg button").forEach(b=>b.onclick=()=>{ state.theme=b.dataset.t; save(); applyTheme(); renderMore(); });
-$("#resetBtn").onclick=()=>{ if(confirm("Reset everything back to the sample data?")){ state=seed(); save(); renderAll(); go("today",{root:true}); } };
 
 /* ---------- push notifications (real, phone) ---------- */
 /* Keeps a demo scheduleAlerts() no-op so old calls stay safe. */
@@ -1247,7 +1302,7 @@ function notifMsg(t,ok){ const el=$("#notifMsg"); if(el){ el.textContent=t||""; 
 async function currentPushSub(){ try{ const reg=await navigator.serviceWorker.ready; return await reg.pushManager.getSubscription(); }catch(e){ return null; } }
 function refreshNotifUI(sub){
   const btn=$("#notifToggle"); if(!btn)return;
-  if(!pushSupported()){ btn.disabled=true; btn.textContent="Not supported on this browser"; $("#notifHint").textContent="This browser can't do notifications. On iPhone use Safari and add Cuibul to your home screen first."; return; }
+  if(!pushSupported()){ btn.disabled=true; btn.textContent="Not available here"; $("#notifHint").textContent="This device can't show notifications. On iPhone, add Cuibul to your home screen first."; return; }
   if(isIOS() && !isStandalone()){ btn.disabled=true; btn.textContent="Add to home screen first";
     $("#notifHint").innerHTML="To get notifications on iPhone: tap the <b>Share</b> button in Safari → <b>Add to Home Screen</b>, then open Cuibul from your home screen and come back here."; return; }
   btn.disabled=false;
@@ -1272,7 +1327,7 @@ async function subscribePush(){
       ua:navigator.userAgent.slice(0,180), updated_at:new Date().toISOString()
     },{onConflict:"endpoint"});
     if(error){ notifMsg("Couldn't save your notification setup — try again.",false); return; }
-    notifMsg("Notifications are on for this device 🎉");
+    notifMsg("You're all set — notifications are on 🎉");
     refreshNotifUI(sub);
   }catch(e){ notifMsg("Something went wrong turning on notifications.",false); }
 }
@@ -1281,7 +1336,7 @@ async function unsubscribePush(){
     const sub=await currentPushSub();
     if(sub){ if(sb&&hid){ try{ await sb.from("push_subscriptions").delete().eq("endpoint",sub.endpoint); }catch(e){} }
       await sub.unsubscribe(); }
-    notifMsg("Notifications turned off for this device.");
+    notifMsg("Notifications turned off.");
     refreshNotifUI(null);
   }catch(e){ notifMsg("Couldn't turn them off — try again.",false); }
 }
@@ -1290,6 +1345,42 @@ async function unsubscribePush(){
 })();
 // keep the button label in sync when the More screen shows
 async function syncNotifUI(){ if(!pushSupported()){ refreshNotifUI(null); return; } refreshNotifUI(await currentPushSub()); }
+
+/* ---------- Feature tour / what's new ---------- */
+const TOUR_VERSION=2; // bump when there's something new to show everyone
+const TOUR_SLIDES=[
+  {e:"🪹",t:"Welcome to Cuibul",b:"Your family's shared nest — shopping, calendar, reminders, meals and notes, all live across everyone's phones."},
+  {e:"🏠",t:"Your Today screen",b:"Everything for today at a glance: the weather, today's events, what to buy, what's coming up, reminders and dinners."},
+  {e:"🗓️",t:"Today's events",b:"The violet card at the top shows what's happening today. Tap any event for details, who's going and the location."},
+  {e:"📥",t:"“Needs your OK”",b:"The amber card is your inbox — new invites and reminders meant for you. Tap Accept to confirm you've seen them."},
+  {e:"⏰",t:"Alerts before events",b:"When you add an event, set “Alert before it starts” so everyone going gets a heads-up — from 10 minutes to a day ahead."},
+  {e:"🔔",t:"Phone notifications — new!",b:"Turn them on in More to get alerts for appointments, new reminders and invites, even when Cuibul is closed. On iPhone, add Cuibul to your home screen first."},
+  {e:"💬",t:"Tell us what you think",b:"Got an idea or found a bug? Tap “Send feedback” in More — and you can reopen this tour there anytime."},
+];
+let tourIdx=0;
+function renderTour(){ const s=TOUR_SLIDES[tourIdx];
+  $("#tourSlide").innerHTML='<span class="tour-emoji">'+s.e+'</span><div class="tour-title">'+s.t+'</div><div class="tour-body">'+s.b+'</div>';
+  $("#tourDots").innerHTML=TOUR_SLIDES.map((_,i)=>'<span class="tour-dot'+(i===tourIdx?" on":"")+'"></span>').join("");
+  $("#tourNext").textContent=(tourIdx===TOUR_SLIDES.length-1)?"Done":"Next";
+  $("#tourSkip").style.visibility=(tourIdx===TOUR_SLIDES.length-1)?"hidden":"visible"; }
+function openTour(){ tourIdx=0; renderTour(); $("#tourModal").classList.add("open"); }
+function closeTour(){ $("#tourModal").classList.remove("open"); try{ localStorage.setItem("cuibul_tour",String(TOUR_VERSION)); }catch(e){} }
+function maybeTour(){ let seen=0; try{ seen=+(localStorage.getItem("cuibul_tour")||0); }catch(e){} if(seen<TOUR_VERSION) setTimeout(openTour,700); }
+$("#tourNext").onclick=()=>{ if(tourIdx<TOUR_SLIDES.length-1){ tourIdx++; renderTour(); } else closeTour(); };
+$("#tourSkip").onclick=closeTour;
+$("#tourModal").addEventListener("click",e=>{ if(e.target.id==="tourModal")closeTour(); });
+{ const tb=$("#tourBtn"); if(tb)tb.onclick=openTour; }
+
+/* ---------- Feedback / suggestion box ---------- */
+function renderFbList(){ const el=$("#fbList"); if(!el)return; const items=(state.feedback||[]).slice().reverse().slice(0,8);
+  el.innerHTML=items.length?('<div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--text-faint);margin-bottom:8px;">Recent ideas</div>'+items.map(f=>'<div class="fb-item">'+esc(f.text)+'<div class="fb-meta">'+esc(f.who||"Someone")+' · '+fmtDay(f.date||todayISO())+'</div></div>').join("")):''; }
+function openFeedback(){ $("#fbText").value=""; renderFbList(); $("#feedbackModal").classList.add("open"); }
+{ const fbBtn=$("#feedbackBtn"); if(fbBtn)fbBtn.onclick=openFeedback; }
+$("#fbCancel").onclick=()=>$("#feedbackModal").classList.remove("open");
+$("#feedbackModal").addEventListener("click",e=>{ if(e.target.id==="feedbackModal")$("#feedbackModal").classList.remove("open"); });
+$("#fbSend").onclick=()=>{ const t=$("#fbText").value.trim(); if(!t)return;
+  state.feedback=state.feedback||[]; state.feedback.push({id:uid(),text:t,who:myName(),date:todayISO(),ts:Date.now()});
+  save(); $("#fbText").value=""; renderFbList(); toast("Thanks — feedback sent 💜"); };
 
 /* ---------- event add/edit modal ---------- */
 let evTypeSel="doctor", evAttSel=[], evEditId=null;
@@ -1351,7 +1442,7 @@ function renderEvDetail(e){
     <div class="det-row"><div class="di">📅</div><div class="dv">${dateLbl}<div class="dv-sub">${timeLbl}</div></div></div>
     ${e.location?`<div class="det-row"><div class="di">📍</div><div class="dv">${esc(e.location)}${mapHtml}</div></div>`:""}
     <div class="det-row"><div class="di">👪</div><div class="dv">${e.attendees&&e.attendees.length?"Tap a name to confirm they're aware:":"For everyone — tap to confirm:"}<div class="chip-row">${attHtml}</div>${statusHtml}</div></div>
-    <div class="det-row"><div class="di">⏰</div><div class="dv">Alert: ${remLbl}<div class="dv-sub">Phone notifications arrive with the live version.</div></div></div>
+    <div class="det-row"><div class="di">⏰</div><div class="dv">Alert: ${remLbl}</div></div>
     <div class="modal-actions" style="margin-top:16px;"><button class="btn ghost" id="evDelBtn" style="flex:1;color:var(--pink)">Delete</button><button class="btn ghost" id="evEditBtn" style="flex:1;">Edit</button><button class="btn" id="evDetClose" style="flex:1;">Done</button></div>`;
   $("#evDelBtn").onclick=()=>{ if(confirm(`Delete "${e.title}"? This can't be undone.`)){ state.events=state.events.filter(x=>x.id!==e.id); save(); $("#evDetail").classList.remove("open"); renderCalendar(); renderToday(); } };
   $("#evEditBtn").onclick=()=>{ $("#evDetail").classList.remove("open"); openEvModal(e); };
