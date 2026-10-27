@@ -102,6 +102,12 @@
   .bud-edit-row .ber-name { flex:1; font-weight:600; font-size:.92rem; min-width:0; }
   .bud-edit-row input { width:92px; flex:none; }
   .bud-edit-row .ber-del { color:var(--text-faint); cursor:pointer; padding:0 4px; flex:none; font-size:1.1rem; }
+  .dvd-row { display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:12px 14px; margin-bottom:9px; cursor:pointer; }
+  .dvd-row .dv-icon { width:34px; height:34px; border-radius:9px; display:grid; place-items:center; font-size:1.05rem; flex:none; background:var(--blue-soft); }
+  .dvd-row .dv-main { flex:1; min-width:0; }
+  .dvd-row .dv-title { font-weight:600; font-size:.95rem; }
+  .dvd-row .dv-sub { font-size:.8rem; color:var(--text-soft); margin-top:1px; }
+  .dvd-row .dv-fmt { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:var(--blue); background:var(--blue-soft); padding:2px 7px; border-radius:20px; flex:none; }
   .card.tight { padding:6px; }
 
   .greeting { padding:8px 2px 2px; }
@@ -176,7 +182,7 @@
 
   .addrow { display:flex; gap:8px; margin-bottom:14px; }
   .addrow input[type=text] { flex:1; min-width:0; }
-  input[type=text], input[type=email], input[type=password], input[type=date], input[type=time], select, textarea { font:inherit; color:var(--text); background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:11px 13px; width:100%; }
+  input[type=text], input[type=email], input[type=password], input[type=search], input[type=number], input[type=date], input[type=time], select, textarea { font:inherit; color:var(--text); background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:11px 13px; width:100%; }
   input:focus, select:focus, textarea:focus { outline:2px solid var(--accent); outline-offset:-1px; border-color:transparent; }
   ::placeholder { color:var(--text-faint); }
   .btn { font:inherit; font-weight:600; background:var(--accent); color:#fff; border:none; border-radius:var(--radius-sm); padding:11px 16px; cursor:pointer; flex:none; transition:transform .1s, filter .15s; }
@@ -480,10 +486,22 @@
     <div class="card" id="expenseList"></div>
   </section>
 
+  <!-- ===== DVDs ===== -->
+  <section class="view" id="view-dvds">
+    <h2 class="section">🎬 DVD collection</h2>
+    <div class="sync-note"><span>🎬</span><div><b>Your family's DVDs.</b> Keep track of what you own — handy at the flea market to check you don't already have it. Use search to look one up fast.</div></div>
+    <input type="search" id="dvdSearch" placeholder="🔍 Search your DVDs…" autocomplete="off" style="margin-bottom:12px;">
+    <div class="addrow"><input type="text" id="dvdInput" placeholder="Add a title…" autocomplete="off"><button class="btn" id="dvdAddBtn">Add</button></div>
+    <div class="seg" id="dvdFilter" style="margin:12px 0;"><button class="on" data-df="have">Have</button><button data-df="want">Wishlist</button></div>
+    <div id="dvdCount" style="font-size:.82rem;color:var(--text-soft);margin-bottom:8px;"></div>
+    <div id="dvdList"></div>
+  </section>
+
   <!-- ===== MORE / HUB ===== -->
   <section class="view" id="view-more">
     <h2 class="section">More</h2>
     <div class="hub-row" data-go="budget"><div class="hr-icon" style="background:var(--teal-soft)">💶</div><div class="hr-main"><div class="hr-title">Budget</div><div class="hr-sub" id="hubBudget">Monthly budget & spending</div></div><div class="hr-arrow">›</div></div>
+    <div class="hub-row" data-go="dvds"><div class="hr-icon" style="background:var(--blue-soft)">🎬</div><div class="hr-main"><div class="hr-title">DVD collection</div><div class="hr-sub" id="hubDvds">Your family's DVDs</div></div><div class="hr-arrow">›</div></div>
     <div class="hub-row" data-go="reminders"><div class="hr-icon" style="background:var(--green-soft)">✅</div><div class="hr-main"><div class="hr-title">Reminders</div><div class="hr-sub" id="hubRem">0 active</div></div><div class="hr-arrow">›</div></div>
     <div class="hub-row" data-go="notes"><div class="hr-icon" style="background:var(--purple-soft)">📝</div><div class="hr-main"><div class="hr-title">Shared notes</div><div class="hr-sub" id="hubNotes">0 notes</div></div><div class="hr-arrow">›</div></div>
     <div class="hub-row" data-go="meals"><div class="hr-icon" style="background:var(--amber-soft)">🍽️</div><div class="hr-main"><div class="hr-title">Meal plan</div><div class="hr-sub">Plan the week's meals</div></div><div class="hr-arrow">›</div></div>
@@ -636,6 +654,20 @@
   </div>
 </div>
 
+<!-- ===== DVD add/edit ===== -->
+<div class="modal-back" id="dvdModal">
+  <div class="modal">
+    <h3 id="dvdModalTitle">Add DVD</h3>
+    <div class="field"><label>Title</label><input type="text" id="dvdTitle" placeholder="e.g. Toy Story"></div>
+    <div class="field"><label>Note (optional)</label><input type="text" id="dvdNote" placeholder="e.g. Special Edition, 2 discs"></div>
+    <div class="field-row">
+      <div class="field"><label>Format</label><select id="dvdFormat"><option value="DVD">DVD</option><option value="Blu-ray">Blu-ray</option><option value="4K">4K Ultra HD</option></select></div>
+      <div class="field"><label>Status</label><select id="dvdStatus"><option value="have">Have it</option><option value="want">Wishlist</option></select></div>
+    </div>
+    <div class="modal-actions"><button class="btn ghost" id="dvdDelete" hidden style="flex:1;color:var(--pink)">Delete</button><button class="btn ghost" id="dvdCancel" style="flex:1;">Cancel</button><button class="btn" id="dvdSave" style="flex:2;">Save</button></div>
+  </div>
+</div>
+
 <!-- ===== Tour / What's new ===== -->
 <div class="modal-back" id="tourModal">
   <div class="modal tour">
@@ -692,6 +724,23 @@ const DEFAULT_BUDGET_CATS=[
   {label:"Health",emoji:"🩺",monthly:80},
   {label:"Fun & leisure",emoji:"🎉",monthly:120},
   {label:"Other",emoji:"📦",monthly:100},
+];
+const DEFAULT_DVDS=[
+  {title:"Transformers", format:"Blu-ray"},
+  {title:"Der Herr der Ringe – Die Rückkehr des Königs"},
+  {title:"Inception"},
+  {title:"Fluch der Karibik"},
+  {title:"Aladdin", note:"2-Disc Special Edition"},
+  {title:"Dornröschen", note:"Diamond Edition"},
+  {title:"WALL·E"},
+  {title:"Dinosaurier"},
+  {title:"Avatar – Aufbruch nach Pandora"},
+  {title:"Ice Age 2 – Jetzt taut's"},
+  {title:"Kung Fu Panda"},
+  {title:"Cars"},
+  {title:"Cars 2"},
+  {title:"Die Chroniken von Narnia – Prinz Kaspian von Narnia"},
+  {title:"Harry Potter à l'école des sorciers", note:"2 DVD (FR)"},
 ];
 function eur(n){ n=Number(n)||0; return "€"+n.toLocaleString(undefined,{minimumFractionDigits:(Math.abs(n%1)>0.001?2:0),maximumFractionDigits:2}); }
 function monthKey(off){ const d=new Date(); d.setDate(1); d.setMonth(d.getMonth()+(off||0)); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); }
@@ -776,6 +825,8 @@ function seed(){
       {id:uid(),amount:49,catId:bc[3].id,date:d(-3),who:mB,note:"Kids' shoes",created:Date.now(),createdBy:mB},
       {id:uid(),amount:80,catId:bc[4].id,date:d(-6),who:mA,note:"Cleaning supplies",created:Date.now(),createdBy:mA},
     ],
+    dvds:DEFAULT_DVDS.map(x=>({id:uid(),status:"have",created:Date.now(),...x})),
+    dvdsSeeded:true,
   };
 }
 
@@ -786,6 +837,8 @@ function migrate(s){
   s.you=s.you||"Beatrice"; s.youId=s.youId||""; s.feedback=s.feedback||[];
   s.expenses=s.expenses||[];
   if(!s.budgetCats||!s.budgetCats.length) s.budgetCats=DEFAULT_BUDGET_CATS.map(c=>({id:uid(),...c}));
+  if(s.dvds===undefined && !s.dvdsSeeded){ s.dvds=DEFAULT_DVDS.map(d=>({id:uid(),status:"have",created:Date.now(),...d})); s.dvdsSeeded=true; }
+  s.dvds=s.dvds||[];
   s.reminders.forEach(r=>{ if(r.ack===undefined)r.ack=false; });
   if(!s.categories||!s.categories.length) s.categories=DEFAULT_CATS.map(c=>({...c}));
   if(!s.shops) s.shops=[{id:uid(),label:"Asian store"},{id:uid(),label:"DM"},{id:uid(),label:"Netto"}];
@@ -814,7 +867,7 @@ function toast(msg){ if(!_toastEl){ _toastEl=document.createElement("div"); _toa
    theme) stay in localStorage per device. */
 let sb=null, hid=null, meUser=null, routed=false, syncReady=false, pendingRender=false;
 let dbWriteTimer=null; const lastJSON={}; const myPresKey=uid();
-const COLS=["config","shopping","reminders","events","notes","meals","feedback","budget"];
+const COLS=["config","shopping","reminders","events","notes","meals","feedback","budget","dvds"];
 function fhCfg(){ return (window.FH_CONFIG||{}); }
 function configured(){ const c=fhCfg(); return !!(c.url&&c.anonKey&&window.supabase); }
 
@@ -822,7 +875,7 @@ function collDocs(){ return {
   config:{name:state.name,members:state.members,shops:state.shops,categories:state.categories,seeded:true},
   shopping:{items:state.shopping}, reminders:{items:state.reminders}, events:{items:state.events},
   notes:{items:state.notes}, meals:{map:state.meals}, feedback:{items:state.feedback},
-  budget:{cats:state.budgetCats, expenses:state.expenses} }; }
+  budget:{cats:state.budgetCats, expenses:state.expenses}, dvds:{items:state.dvds} }; }
 function applyDoc(name,v){ v=v||{};
   if(name==="config"){ if(v.name)state.name=v.name; if(Array.isArray(v.members))state.members=v.members;
     if(Array.isArray(v.shops))state.shops=v.shops; if(Array.isArray(v.categories))state.categories=v.categories; }
@@ -833,6 +886,7 @@ function applyDoc(name,v){ v=v||{};
   else if(name==="meals") state.meals=(v.map&&typeof v.map==="object")?v.map:{};
   else if(name==="feedback") state.feedback=Array.isArray(v.items)?v.items:[];
   else if(name==="budget"){ if(Array.isArray(v.cats)&&v.cats.length)state.budgetCats=v.cats; if(Array.isArray(v.expenses))state.expenses=v.expenses; }
+  else if(name==="dvds"){ if(Array.isArray(v.items))state.dvds=v.items; }
 }
 function scheduleDbWrite(){ if(!sb||!hid||!syncReady)return; clearTimeout(dbWriteTimer); dbWriteTimer=setTimeout(flushDb,350); }
 async function flushDb(){ if(!sb||!hid||!syncReady)return; const m=collDocs();
@@ -852,7 +906,7 @@ function subscribeLive(){ try{ sb.channel("rt-"+hid)
 async function seedHousehold(){ const s=seed();
   state.name=s.name; state.members=s.members; state.shops=s.shops; state.categories=s.categories;
   state.shopping=s.shopping; state.reminders=s.reminders; state.events=s.events; state.notes=s.notes; state.meals=s.meals; state.feedback=s.feedback;
-  state.budgetCats=s.budgetCats; state.expenses=s.expenses;
+  state.budgetCats=s.budgetCats; state.expenses=s.expenses; state.dvds=s.dvds;
   syncReady=true; const m=collDocs();
   for(const name of COLS){ lastJSON[name]=JSON.stringify(m[name]);
     try{ await sb.from("collections").upsert({household_id:hid,name:name,data:m[name]}); }catch(e){} } }
@@ -990,7 +1044,7 @@ function attPending(e){ return attNeeded(e).filter(id=>!(e.confirmedBy||[]).incl
 
 /* ---------- render all ---------- */
 function renderAll(){ $("#familyName").textContent=state.name; applyTheme();
-  renderToday(); renderShopping(); renderMeals(); renderReminders(); renderCalendar(); renderNotes(); renderBudget(); renderMore(); }
+  renderToday(); renderShopping(); renderMeals(); renderReminders(); renderCalendar(); renderNotes(); renderBudget(); renderDvds(); renderMore(); }
 const greetWord=GREETINGS[Math.floor(Math.random()*GREETINGS.length)];
 function renderHeader(){ const now=new Date();
   $("#todayDate").textContent=now.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"});
@@ -1297,7 +1351,7 @@ function applyTheme(){ const t=state.theme||"auto"; if(t==="auto")document.docum
 
 /* ---------- navigation with back stack ---------- */
 let currentView="today"; const stack=[];
-const NAV_MAP={today:"today",shopping:"shopping",meals:"meals",calendar:"calendar",more:"more",reminders:"more",notes:"more",budget:"more"};
+const NAV_MAP={today:"today",shopping:"shopping",meals:"meals",calendar:"calendar",more:"more",reminders:"more",notes:"more",budget:"more",dvds:"more"};
 function showView(v){ $$(".view").forEach(s=>s.classList.remove("active")); $("#view-"+v).classList.add("active");
   $$("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===NAV_MAP[v])); }
 function go(view,opts){ opts=opts||{}; if(opts.root){ stack.length=0; } else if(view!==currentView){ stack.push(currentView); }
@@ -1445,7 +1499,7 @@ async function unsubscribePush(){
 async function syncNotifUI(){ if(!pushSupported()){ refreshNotifUI(null); return; } refreshNotifUI(await currentPushSub()); }
 
 /* ---------- Feature tour / what's new ---------- */
-const TOUR_VERSION=2; // bump when there's something new to show everyone
+const TOUR_VERSION=3; // bump when there's something new to show everyone
 const TOUR_SLIDES=[
   {e:"🪹",t:"Welcome to Cuibul",b:"Your family's shared nest — shopping, calendar, reminders, meals and notes, all live across everyone's phones."},
   {e:"🏠",t:"Your Today screen",b:"Everything for today at a glance: the weather, today's events, what to buy, what's coming up, reminders and dinners."},
@@ -1453,6 +1507,7 @@ const TOUR_SLIDES=[
   {e:"📥",t:"“Needs your OK”",b:"The amber card is your inbox — new invites and reminders meant for you. Tap Accept to confirm you've seen them."},
   {e:"⏰",t:"Alerts before events",b:"When you add an event, set “Alert before it starts” so everyone going gets a heads-up — from 10 minutes to a day ahead."},
   {e:"🔔",t:"Phone notifications — new!",b:"Turn them on in More to get alerts for appointments, new reminders and invites, even when Cuibul is closed. On iPhone, add Cuibul to your home screen first."},
+  {e:"🎬",t:"DVD collection — new!",b:"Track the family's DVDs under More → DVD collection. Search it at the flea market to check you don't already own something, and mark ones you're hunting for as a wishlist."},
   {e:"💬",t:"Tell us what you think",b:"Got an idea or found a bug? Tap “Send feedback” in More — and you can reopen this tour there anytime."},
 ];
 let tourIdx=0;
@@ -1554,6 +1609,47 @@ $("#budEditList").addEventListener("click",e=>{ const d=e.target.closest("[data-
   if(confirm("Remove this category? Past expenses stay but show as uncategorised.")){ state.budgetCats=(state.budgetCats||[]).filter(c=>c.id!==d.dataset.bdel); save(); renderBudEditList(); renderBudget(); renderToday(); } });
 $("#budNewAdd").onclick=()=>{ const v=$("#budNewLabel").value.trim(); if(!v)return; state.budgetCats.push({id:uid(),label:v,emoji:"📦",monthly:100}); $("#budNewLabel").value=""; save(); renderBudEditList(); renderBudget(); toast("Category added"); };
 $("#budNewLabel").addEventListener("keydown",e=>{ if(e.key==="Enter")$("#budNewAdd").click(); });
+
+/* ---------- DVD collection ---------- */
+let dvdFilter="have", dvdQuery="", dvdEditId=null;
+function renderDvds(){
+  if(!$("#dvdList"))return;
+  const all=state.dvds||[];
+  const haveN=all.filter(d=>d.status!=="want").length, wantN=all.filter(d=>d.status==="want").length;
+  $$("#dvdFilter button").forEach(b=>b.classList.toggle("on", b.dataset.df===dvdFilter));
+  const q=dvdQuery.trim().toLowerCase();
+  let list=all.filter(d=> (dvdFilter==="want") ? d.status==="want" : d.status!=="want");
+  if(q) list=all.filter(d=>(d.title||"").toLowerCase().includes(q) || (d.note||"").toLowerCase().includes(q)); // search spans everything
+  list=list.slice().sort((a,b)=>(a.title||"").localeCompare(b.title||""));
+  const hub=$("#hubDvds"); if(hub)hub.textContent=haveN+" DVD"+(haveN!==1?"s":"")+(wantN?" · "+wantN+" on wishlist":"");
+  $("#dvdCount").textContent = q ? (list.length+" match"+(list.length!==1?"es":"")+" for “"+dvdQuery.trim()+"”")
+    : (dvdFilter==="want" ? (wantN+" on your wishlist") : (haveN+" in your collection"));
+  if(!list.length){ $("#dvdList").innerHTML=emptyMsg("🎬", q?"No match — you don't seem to have that one":(dvdFilter==="want"?"Nothing on the wishlist yet":"No DVDs yet — add one above")); return; }
+  $("#dvdList").innerHTML=list.map(d=>`<div class="dvd-row" data-dvdedit="${d.id}"><div class="dv-icon">${d.status==="want"?"✨":"🎬"}</div>
+    <div class="dv-main"><div class="dv-title">${esc(d.title)}</div>${d.note?`<div class="dv-sub">${esc(d.note)}</div>`:""}</div>
+    ${d.format&&d.format!=="DVD"?`<span class="dv-fmt">${esc(d.format)}</span>`:""}</div>`).join("");
+}
+function openDvdModal(dvd){ dvdEditId=dvd?dvd.id:null;
+  $("#dvdModalTitle").textContent=dvd?"Edit DVD":"Add DVD";
+  $("#dvdTitle").value=dvd?dvd.title:""; $("#dvdNote").value=dvd?(dvd.note||""):"";
+  $("#dvdFormat").value=dvd?(dvd.format||"DVD"):"DVD"; $("#dvdStatus").value=dvd?(dvd.status||"have"):dvdFilter;
+  $("#dvdDelete").hidden=!dvd; $("#dvdModal").classList.add("open"); setTimeout(()=>$("#dvdTitle").focus(),50); }
+function addDvd(){ const inp=$("#dvdInput"); const t=(inp.value||"").trim(); if(!t)return;
+  state.dvds=state.dvds||[]; state.dvds.push({id:uid(),title:t,note:"",format:"DVD",status:dvdFilter,created:Date.now(),createdBy:myId()});
+  inp.value=""; save(); renderDvds(); toast("Added ✓"); }
+$("#dvdAddBtn").onclick=addDvd;
+$("#dvdInput").addEventListener("keydown",e=>{ if(e.key==="Enter")addDvd(); });
+$("#dvdSearch").addEventListener("input",e=>{ dvdQuery=e.target.value; renderDvds(); });
+$$("#dvdFilter button").forEach(b=>b.onclick=()=>{ dvdFilter=b.dataset.df; dvdQuery=""; $("#dvdSearch").value=""; renderDvds(); });
+$("#dvdList").addEventListener("click",e=>{ const r=e.target.closest("[data-dvdedit]"); if(!r)return; const dv=(state.dvds||[]).find(x=>x.id===r.dataset.dvdedit); if(dv)openDvdModal(dv); });
+$("#dvdCancel").onclick=()=>$("#dvdModal").classList.remove("open");
+$("#dvdModal").addEventListener("click",e=>{ if(e.target.id==="dvdModal")$("#dvdModal").classList.remove("open"); });
+$("#dvdSave").onclick=()=>{ const t=$("#dvdTitle").value.trim(); if(!t){ toast("Enter a title"); return; }
+  const data={title:t, note:$("#dvdNote").value.trim(), format:$("#dvdFormat").value, status:$("#dvdStatus").value};
+  if(dvdEditId){ const d=state.dvds.find(x=>x.id===dvdEditId); if(d)Object.assign(d,data); }
+  else { state.dvds.push({id:uid(),...data,created:Date.now(),createdBy:myId()}); }
+  dvdFilter=data.status; save(); $("#dvdModal").classList.remove("open"); renderDvds(); toast("Saved ✓"); };
+$("#dvdDelete").onclick=()=>{ state.dvds=(state.dvds||[]).filter(x=>x.id!==dvdEditId); save(); $("#dvdModal").classList.remove("open"); renderDvds(); };
 
 /* ---------- event add/edit modal ---------- */
 let evTypeSel="doctor", evAttSel=[], evEditId=null;
